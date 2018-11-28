@@ -17,19 +17,33 @@ multimap<string, long> get_word_indices(const string& file_name);
 int main(int argc, char *argv[])
 {
     vector<string> fields{"field1", "field2", "field3"};
-    writer w("test", fields);
-    record rec("test", '\n');
-    vector<string> data{"data1", "data2"};
+//    writer w("test", fields);
+    record rec;
+    vector<string> data{"data1", "data2", "more", "extra"};
     vector<string> data1{"data3", "data4"};
     vector<string> data2{"data5", "data6"};
     vector<string> data3{"data7"};
-    rec.insert(data);
-    rec.insert(data1);
-    rec.insert(data2);
-    rec.insert(data3);
-    rec.insert();
-    while(rec.more())
-        cout << rec.next() << endl;
+//    rec.set_file("test");
+//    rec.insert(data);
+//    rec.insert(data3);
+//    rec.insert(data1);
+//    rec.insert(data2);
+//    rec.insert(data3);
+//    rec.insert(data2);
+//    rec.insert();
+//    while(rec.more())
+//        cout << rec.next() << endl;
+    mmytable table("test");
+
+    cout << table.__itables << endl;
+
+//    simple_map<string, multimap<string, long> > test;
+//    simple_map<string, string> test2;
+//    multimap<string, long> test3;
+//    multimap<string, long> test4;
+
+//    while(rec.more())
+//        cout << rec.next() << endl;
 
 //    multimap<string, long> word_indices;
 //    word_indices = get_word_indices("../state_machine/solitude.txt");
@@ -105,10 +119,10 @@ void field_test1()
     test.field_add("two");
     test.field_add("three");
     test.field_add("four");
-    test.__itables.print();
+//    test.__itables.print();
     string teststr = "123| foo | \nbar|    final test|jk";
     test.parse(teststr, teststr.size());
-    test.__itables.print();
+//    test.__itables.print();
 
 //    return 0;
 }

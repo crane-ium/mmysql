@@ -3,5 +3,6 @@ debug/
 release/
 .qmake.stash
 MakeFile*
+.bin
 
 
