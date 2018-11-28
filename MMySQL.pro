@@ -28,3 +28,7 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../state_ma
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../state_machine/release/state_machine.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../state_machine/debug/state_machine.lib
 else:unix: PRE_TARGETDEPS += $$PWD/../state_machine/libstate_machine.a
+
+DISTFILES += \
+    ../test.bin \
+    test.bin

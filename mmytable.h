@@ -23,7 +23,7 @@ struct writer{
            const vector<string>& fields,
            const char delimiter=DELIMITER)
     {
-        ofstream writestream(filename); //try to open
+        ofstream writestream(filename+".bin", ios::binary); //try to open
         if(writestream.is_open()){
             for(size_t i = 0; i < fields.size();i++){
                 //Insert into the file for field formats
@@ -39,36 +39,80 @@ struct writer{
     vector<string> _fields;
 };
 
+/**
+ * @brief Read/write file and give line information
+ * file header format:
+ * [field0]|[field1]|...|[fieldn]
+ * id# = bytes to get to start of this line
+ * table[field0]
+ */
 struct record{
     //CTORS
     //we can assume filename is given to mmytable as it's __name
     record(const string& filename="none", const char delimiter=DELIMITER)
-        :_open(false), _file(filename), _delimiter(delimiter){
+        :_open(false), _init(false), _file(filename), _delimiter(delimiter){
         _fields=0;
         _lastrecord="";
         _lastrecordflag = false;
+        init(); //initialize record from file
     }
 
     //MEMBER FUNCS
     ~record(){_ifstream.close();} //guarantee it closes, hopefully
-    void set_file(const string& filename){_file=filename;}
-
+//    void set_file(const string& filename){_file=filename;}
+    bool insert(){
+        //insert empty data
+        vector<string> emptyvec{""};
+        return insert(emptyvec);
+    }
+    bool insert(vector<string>& svec){
+//        init();
+        //Verify that the svec fits the dataframe
+//    if(svec.size() == _fields - 1){
+        fstream fs(_file+".bin", ios::binary | ios::out | ios::app | ios::ate);
+        unsigned long fsize = fs.tellg(); //get file size
+        cout << "size: " << fsize << " fields: " << _fields << endl;
+        //I will manually add +".bin" because we are also only declaring
+        //binary flag at the same location.
+        if(!fs.is_open()){
+            if(debug == bugflag::none) cout << "[ERROR] record.insert: file dne\n";
+            return false;
+        }
+        //should not have an id associated, yet. We will give it that
+        fs << fsize << _delimiter;
+        //then insert new data at end
+        vector<string>::iterator it = svec.begin();
+        for(size_t i = 0; i < _fields-1; i++){
+            if(it != svec.end())
+                fs << (*it);
+            fs << _delimiter;
+            it++;
+        }
+        fs << '\n'; //endline
+        fs.close();
+        return true; //inserted successfully
+//    }
+    }
     string& next(){ //Return the next record from file
         if(_lastrecordflag && open()){
             _lastrecord = "";
-            for(size_t i = 0; i < _fields; i++){
-                //for each field, get those
-                /** @todo optimize here **/
-                string temp;
-                getline(_ifstream, temp);
-                if(!_ifstream){
-                    _open = false;
-                    _ifstream.close();
-                    _lastrecord = "\0";
-                    _lastrecordflag = true; //don't let more grabs
-                    return _lastrecord;
-                }
-                _lastrecord += temp;
+            cout << "Fields: " << _fields << endl;
+//            for(size_t i = 0; i < _fields; i++){
+//                //for each field, get those
+//                /** @todo optimize here **/
+//                string temp;
+//                getline(_ifstream, temp, _delimiter); //binary file naturally no '\0'
+
+//                _lastrecord += temp;
+//            }
+            string temp;
+            getline(_ifstream, _lastrecord);
+            if(!_ifstream){
+                _open = false;
+                _ifstream.close();
+                _lastrecord = "\0";
+                _lastrecordflag = true; //don't let more grabs
+                return _lastrecord;
             }
             _lastrecordflag = true;
             return _lastrecord;
@@ -85,31 +129,47 @@ struct record{
             _lastrecordflag = false;
         return (!_lastrecordflag) | (bool)_ifstream;
     }
+    void init(){
+        if(_init) //protect from re-init
+            return;
+
+        ifstream initstream(_file+".bin", ios::binary);
+        if(initstream.is_open()){
+            //We need to grab the field names!
+            string allfields;
+            getline(initstream, allfields);
+            _delimiter = allfields[0]; //definition of delimiter is first char in file
+            _fieldbytes = allfields.length();
+            size_t i_start = 1;
+            size_t i;
+            for(i = 1; allfields[i] != '\0';i++){
+                if(allfields[i] == _delimiter){
+                    //take this as a field
+                    _fields++;
+                    _fieldnames.push_back(allfields.substr(i_start, i-i_start));
+                    i_start = i+1;
+                }
+            }
+            for(size_t i = 0; i < _fieldnames.size(); i++){
+                cout << _fieldnames[i] << " ";
+            }
+            cout << endl;
+            //the stream is now on the starting line
+            //know how much to skip immediately
+            _fieldbytes = _ifstream.tellg();
+            _init = true;
+            initstream.close();
+        }else{
+            if(debug == bugflag::none) cout << "[FAIL] record.init cannot open\n";
+        }
+    }
     bool open(){
         if(!_open){
+            init(); //initialize record from data retrieved from file
             _open= true;
-            _ifstream.open(_file);
+            _ifstream.open(_file+".bin", ios::binary);
             if(_ifstream.is_open()){
-                //We need to grab the field names!
-                string allfields;
-                getline(_ifstream, allfields);
-                _delimiter = allfields[0]; //definition of delimiter is first char in file
-
-                _fieldbytes = allfields.length();
-                size_t i_start = 1;
-                size_t i;
-                for(i = 1; allfields[i] != '\0';i++){
-                    if(allfields[i] == _delimiter){
-                        //take this as a field
-                        _fields++;
-                        _fieldnames.push_back(allfields.substr(i_start, i-i_start));
-                        i_start = i+1;
-                    }
-                }
-                for(size_t i = 0; i < _fieldnames.size(); i++){
-                    cout << _fieldnames[i] << " ";
-                }
-                //the stream is now on the starting line
+                _ifstream.ignore(_fieldbytes); //ignore initial bytes
                 return true;
             }
             _open = false;
@@ -120,7 +180,7 @@ struct record{
     size_t field_count() const{return _fields;}
 
     //VARS
-    bool _open;
+    bool _open, _init; //checks if file is open, or already initialized
     string _file;
     ifstream _ifstream; //for initial reading to create table
     fstream _fstream; //for reading AND writing
@@ -128,7 +188,7 @@ struct record{
     size_t _fields; //# of fields in a file
 //        char** _fieldnames; //names of parsed fields
     vector<string> _fieldnames;
-    size_t _fieldbytes; //bytes of starting field string
+    unsigned long _fieldbytes; //bytes of starting field string
     char _delimiter; //delimiter that seperates fields
     string _lastrecord;
     bool _lastrecordflag; //checks if it's been retrieved yet or not
@@ -161,13 +221,6 @@ public:
     string __name; //Name of the table it is storing
     string __dir; //name of directory
     size_t __table_count;
-    /**
-     * @brief Read/write file and give line information
-     * file header format:
-     * [field0]|[field1]|...|[fieldn]
-     * id# = bytes to get to start of this line
-     * table[field0]
-     */
 
     record rec; //My record
 //    void add_field(const string& strs, ...); //REMOVED FEATURE

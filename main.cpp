@@ -17,8 +17,17 @@ multimap<string, long> get_word_indices(const string& file_name);
 int main(int argc, char *argv[])
 {
     vector<string> fields{"field1", "field2", "field3"};
-//    writer w("../test", fields);
-    record rec("../test", '\n');
+    writer w("test", fields);
+    record rec("test", '\n');
+    vector<string> data{"data1", "data2"};
+    vector<string> data1{"data3", "data4"};
+    vector<string> data2{"data5", "data6"};
+    vector<string> data3{"data7"};
+    rec.insert(data);
+    rec.insert(data1);
+    rec.insert(data2);
+    rec.insert(data3);
+    rec.insert();
     while(rec.more())
         cout << rec.next() << endl;
 
