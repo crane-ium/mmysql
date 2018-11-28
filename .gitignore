@@ -1,3 +1,7 @@
 *.autosave
+debug/
+release/
+.qmake.stash
+MakeFile*
 
 

@@ -15,3 +15,16 @@ HEADERS += \
     mmysql.h \
     mmytable.h \
     mmyrecord.h
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../state_machine/release/ -lstate_machine
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../state_machine/debug/ -lstate_machine
+else:unix: LIBS += -L$$PWD/../state_machine/ -lstate_machine
+
+INCLUDEPATH += $$PWD/../state_machine/debug
+DEPENDPATH += $$PWD/../state_machine/debug
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../state_machine/release/libstate_machine.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../state_machine/debug/libstate_machine.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../state_machine/release/state_machine.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../state_machine/debug/state_machine.lib
+else:unix: PRE_TARGETDEPS += $$PWD/../state_machine/libstate_machine.a

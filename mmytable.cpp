@@ -4,14 +4,14 @@
   */
 #include "mmytable.h"
 
+char DELIMITER = '|';
 
-mmytable::mmytable(const string& table_name)
-    : __name(table_name)
+mmytable::mmytable(const string& table_name, const string &dir)
+    : __name(table_name), __dir(dir)
 {
     //Based on the table_name, open that file and read all the entries
     // into index tables, so that queries are able to effectively find
     // intersections/unions of those index requirements
-
 }
 
 void mmytable::init(const string &table_name){
@@ -23,6 +23,7 @@ void mmytable::field_add(const string &field_name){
     __itables.insert(field_name);
     __fields[fsize] = field_name; //Associate the column to field. For file read/write
 }
+
 /**
  * @brief mmytable::parse   : Turn a given file-line into __itables data
  * @param fileline          : string to be parsed
@@ -39,6 +40,7 @@ void mmytable::parse(const string &fileline, const size_t length, const char del
     size_t count = 0;
     string subs;
     mmyint lineid; //id value prefixed at start of the string
+
 //    while(i_start < length){
 //        i_end = fileline.find(delimiter, i_start);
 //        if(i_end > length) //meaning it's long_int_max
@@ -47,9 +49,9 @@ void mmytable::parse(const string &fileline, const size_t length, const char del
 //            //Take that substring as an int
 //            subs = fileline.substr(i_start, i_end-i_start);
 //        }
-
 //        count++;
 //    }
+
     for(size_t i = 0; i <= length; i++){
         //This way I can easily filter out whitespace without taking any extra steps
         if(flag==lineflag::start){
@@ -61,8 +63,6 @@ void mmytable::parse(const string &fileline, const size_t length, const char del
                 i_end++;
             }
         }else{
-            if(isspace(fileline[i]))
-                continue;
             if(fileline[i] == delimiter || i == length){
                 subs = fileline.substr(i_start, i_end-i_start);
                 //Put them into their fields
@@ -76,6 +76,8 @@ void mmytable::parse(const string &fileline, const size_t length, const char del
                 count++;
                 continue;
             }
+            if(isspace(fileline[i]))
+                continue;
             i_end = i+1;
         }
     }
