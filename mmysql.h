@@ -6,18 +6,25 @@
 
 #include <sstream>
 #include <iostream>
+#include "mmytable.h" //read/writes from/to database. SQL gives commands
 
 using namespace std;
 
 /**
- * @brief User-Text-Interface for the mmysql class
- *
+ * @brief Interact with database
  */
-
 class mmysql
 {
 public:
+    //CTOR
     mmysql();
+
+    //MEMBER FUNCTIONS
+
+    //return a 2d table with with requested fields
+    vector<vector<string> >& select(vector<string>& fields);
+private:
+    simple_map<string, mmytable> __tables; //Multitable access
 };
 
 

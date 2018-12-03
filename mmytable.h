@@ -7,8 +7,10 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <set>
 #include "../bplustree_mmap/multimap.h"
 #include "../bplustree_mmap/map.h"
+#include "mmyshunting.h"
 
 extern char DELIMITER;
 
@@ -87,11 +89,12 @@ struct record{
     size_t get_fields() const{
         return _fields;
     }
-    void set_file(const string& filename){
+    bool set_file(const string& filename){
         if(_init)
-            return;
+            return false;
         _file=filename;
         init();
+        return true;
     }
     bool insert(){
         //insert empty data
@@ -186,7 +189,7 @@ struct record{
             //the stream is now on the starting line
             //know how much to skip immediately
             _fieldbytes = initstream.tellg();
-            cout << "set fbytes: " << _fieldbytes << endl;
+//            cout << "set fbytes: " << _fieldbytes << endl;
             _init = true;
             initstream.close();
         }else{
@@ -225,6 +228,7 @@ struct record{
     bool _lastrecordflag; //checks if it's been retrieved yet or not
 };
 
+typedef unsigned long mmyint;
 /**
  * @brief mmysql database, main-memory storage
  * Uses my multimaps
@@ -234,17 +238,25 @@ struct record{
 class mmytable
 {
 public:
-    typedef long mmyint;
     mmytable();
     mmytable(const string& filelocation);
     mmytable(const string& table_name, const string& dir);
 
+    //Initialize functionality
     void init(const string& table_name); //define table to access
     void field_add_all(const vector<string>& fieldnames);
     void field_add(const string& field_name); //Add field to __itable
     void parse(const string& fileline, const char delimiter='|');
+    bool read_file();
 
-    void insert(const vector<string>& fieldnames);
+    //Selection
+    multimap<mmyint, string>& select(const vector<string>& fields, const string &constraints);
+    multimap<mmyint, string>& select(const string& constraints);
+
+    void insert(vector<string> &fieldnames);
+    friend vector<mmyint>& vector_filter(const string& fieldname,
+                                         const string& op,
+                                         const string& comp);
 
 //    void create(const string& table_name, const string &strs, ...); //REMOVED FEATURE
 //private:

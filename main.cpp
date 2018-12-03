@@ -37,6 +37,13 @@ int main(int argc, char *argv[])
 
     cout << table.__itables << endl;
 
+    table.select("");
+
+    string s = "(last = \"Van Gogh\" or last = Jackson and salary >= 165000) or (andandor = 5)";
+
+    mmynode* tree = parse_to_tree(s);
+    tree->print();
+
 //    simple_map<string, multimap<string, long> > test;
 //    simple_map<string, string> test2;
 //    multimap<string, long> test3;

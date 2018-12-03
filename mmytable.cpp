@@ -12,16 +12,8 @@ mmytable::mmytable(){
 mmytable::mmytable(const string& filelocation)
     : __name(filelocation), __dir(""){
 
-    rec.set_file(filelocation);
-    __delimiter = rec.get_delimiter();
-
-    field_add_all(rec.get_fieldnames());
-
-    //put the file into __itable
-    while(rec.more()){
-        string temp = rec.next();
-        parse(temp, __delimiter);
-    }
+    if(!read_file())
+        cout << "Can't read\n";
 }
 
 mmytable::mmytable(const string& table_name, const string &dir)
@@ -31,10 +23,25 @@ mmytable::mmytable(const string& table_name, const string &dir)
     // into index tables, so that queries are able to effectively find
     // intersections/unions of those index requirements
 
-    rec.set_file(dir+table_name);
-    __delimiter = rec.get_delimiter();
+    read_file();
 }
 
+//Reads the file into our table
+bool mmytable::read_file(){
+    if(!rec.set_file(__dir+__name))
+        return false;
+
+    __delimiter = rec.get_delimiter();
+
+    field_add_all(rec.get_fieldnames());
+
+    //put the file into __itable
+    while(rec.more()){
+        string temp = rec.next();
+        parse(temp, __delimiter);
+    }
+    return true;
+}
 void mmytable::init(const string &table_name){
     __name = table_name;
 }
@@ -51,7 +58,7 @@ void mmytable::field_add(const string &field_name){
     __fields[fsize] = field_name; //Associate the column to field. For file read/write
 }
 
-void mmytable::insert(const vector<string>& fieldnames){
+void mmytable::insert(vector<string>& fieldnames){
     rec.insert(fieldnames);
 }
 
@@ -90,61 +97,43 @@ void mmytable::parse(const string &fileline, const char delimiter){
             continue;
         }
     }
-
-//    while(i_start < length){
-//        i_end = fileline.find(delimiter, i_start);
-//        if(i_end > length) //meaning it's long_int_max
-//            i_end = length;
-//        if(count==0){
-//            //Take that substring as an int
-//            subs = fileline.substr(i_start, i_end-i_start);
-//        }
-//        count++;
-//    }
-//    for(size_t i = 0; i < length; i++){
-//        //This way I can easily trim whitespace without taking any extra steps
-//        if(flag==lineflag::start){
-//            //on second thought, don't trim whitespace, leave as is
-//            if(/*isspace(fileline[i]) || */fileline[i]==delimiter){
-//                i_start++;
-//                continue;
-//            }else{
-//                flag=lineflag::end; //change flag
-//                i_end++;
-//            }
-//        }else{
-//            if(fileline[i] == delimiter){
-//                subs = fileline.substr(i_start, i_end-i_start);
-//                //Put them into their fields
-//                if(count==0){
-//                    lineid = stoi(subs);
-//                }else{
-//                    __itables[__fields[count-1]][subs] += lineid;
-//                }
-//                flag=lineflag::start; //change flag back
-//                i_start = i+1;
-//                count++;
-//                continue;
-//            }
-//            if(isspace(fileline[i]))
-//                continue;
-//            i_end = i+1;
-//        }
-//    }
 }
 
-//LET'S NOT USE VARIADIC HERE, SINCE CANNOT PASS OBJECTS EFFectivley
-//void mmytable::create(const string& table_name, const string &strs, ...){
-//    __name = table_name;
-//    __itables.insert(table_name); //Create the table
-//    if(strs != ""){
-//        if(debug>=bugflag::medium)
-//            cout << "[D] mmytable create: adding field: " << strs << endl;
-//        add_field(strs);
-////        add_field(...);
+//Takes field constraints. Returns 2d table of relevant data.
+multimap<mmyint, string>& mmytable::select(const vector<string>& fields,
+                                           const string& constraints){
+    multimap<mmyint, string> selection;
+
+    return selection;
+}
+//Select * From ... where constraints
+//Based on constraints. Returns all fields data.
+multimap<mmyint, string>& mmytable::select(const string& constraints){
+    multimap<mmyint, string> selection;
+//    vector<mmyint> idnums;
+    set<mmyint> idnums; //All initial idnums
+
+//    //Apply constraints and filter out non-matches
+//    for(size_t i = 0; i < __fields.size(); i++){
+//        vector<mmyint> tempids;
+//        //Get all matching ID#s into a vector
+//        for(auto it = __itables[__fields[i]].begin();
+//            it!= __itables[__fields[i]].end();
+//            it++){
+
+//            add_sorted(tempids, (*it).vec); //Make sure our set is sorted using my function
+
+//        }
+//        //Here do an intersection/union of idnums vs tempids
+//        //Get the new idnums, which represents the inner
 //    }
-//}
-//void mmytable::add_field(const string &strs, ...){
-//    bool inserted = __itables.insert(strs);
-//    if(debug>=bugflag::heavy && !inserted) cout << "[DEBUG] " << __FUNCTION__ << ": failed insert\n";
-//}
+
+    return selection;
+}
+
+//Get a vector of all id#s that pass the comparison
+vector<mmyint>& vector_filter(const string& fieldname,
+                              const string& op,
+                              const string& comp){
+
+}

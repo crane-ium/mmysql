@@ -8,13 +8,23 @@ SOURCES += \
     sql_interface.cpp \
     mmysql.cpp \
     mmytable.cpp \
-    mmyrecord.cpp
+    mmyrecord.cpp \
+    mmyset.cpp \
+    mmytable_functions.cpp \
+    mmyshunting.cpp \
+    parse_tree.cpp \
+
 
 HEADERS += \
     sql_interface.h \
     mmysql.h \
     mmytable.h \
-    mmyrecord.h
+    mmyrecord.h \
+    mmyset.h \
+    mmytable_functions.h \
+    mmyshunting.h \
+    parse_tree.h \
+
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../state_machine/release/ -lstate_machine
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../state_machine/debug/ -lstate_machine
