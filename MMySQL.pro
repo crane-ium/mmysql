@@ -13,6 +13,7 @@ SOURCES += \
     mmytable_functions.cpp \
     mmyshunting.cpp \
     parse_tree.cpp \
+    sethelper.cpp \
 
 
 HEADERS += \
@@ -24,6 +25,7 @@ HEADERS += \
     mmytable_functions.h \
     mmyshunting.h \
     parse_tree.h \
+    sethelper.h \
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../state_machine/release/ -lstate_machine
@@ -41,4 +43,5 @@ else:unix: PRE_TARGETDEPS += $$PWD/../state_machine/libstate_machine.a
 
 DISTFILES += \
     ../test.bin \
-    test.bin
+    test.bin \
+    resultsfile.bin

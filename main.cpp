@@ -16,33 +16,40 @@ multimap<string, long> get_word_indices(const string& file_name);
 
 int main(int argc, char *argv[])
 {
-    vector<string> fields{"field1", "field2", "field3"};
-//    writer w("test", fields);
+    vector<string> fields{"lname", "fname", "age", "major"};
     record rec;
-    vector<string> data{"data1", "data2", "more", "extra"};
-    vector<string> data1{"data3", "data4"};
-    vector<string> data2{"data5", "data6"};
-    vector<string> data3{"data7"};
+    vector<string> data0{"Crane", "Stephen", "120", "Statistics"};
+    vector<string> data1{"Blow", "Joe", "15", "Math"};
+    vector<string> data2{"Barkeshli", "Sassan", "100", "CS"};
+//    writer w("test", fields);
 //    rec.set_file("test");
-//    rec.insert(data);
-//    rec.insert(data3);
+//    rec.insert(data0);
 //    rec.insert(data1);
 //    rec.insert(data2);
-//    rec.insert(data3);
-//    rec.insert(data2);
-//    rec.insert();
-//    while(rec.more())
-//        cout << rec.next() << endl;
+
     mmytable table("test");
 
     cout << table.__itables << endl;
 
-    table.select("");
+    string s = "age>15 or fname = Joe xor (major = \"Statistics\" or major=CS)";
 
-    string s = "(last = \"Van Gogh\" or last = Jackson and salary >= 165000) or (andandor = 5)";
+    ofstream resultsfile("resultsfile.bin", ios::binary);
+    table.select(resultsfile, s);
 
-    mmynode* tree = parse_to_tree(s);
-    tree->print();
+    set<unsigned long> s1{1, 2, 3, 4};
+    set<unsigned long> s2{3, 4, 5, 6};
+    set<unsigned long> result;
+    result = s1+s2;
+    cout << result << endl;
+    result = s1*s2;
+    cout << result << endl;
+    result = s1^s2;
+    cout << result << endl;
+
+//    string s = "(last = \"Van Gogh\" or last = Jackson and salary >= 165000) or (andandor = 5)";
+
+//    mmynode* tree = parse_to_tree(s);
+//    tree->print();
 
 //    simple_map<string, multimap<string, long> > test;
 //    simple_map<string, string> test2;

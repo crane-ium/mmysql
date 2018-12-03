@@ -1,8 +1,4 @@
-|field1|field2|field3|
-23|data1|data2|more|
-44|data7|||
-56|data3|data4||
-73|data5|data6||
-90|data7|||
-102|data5|data6||
-120||||
+|lname|fname|age|major|
+24|Crane|Stephen|120|Statistics|
+57|Blow|Joe|15|Math|
+78|Barkeshli|Sassan|100|CS|

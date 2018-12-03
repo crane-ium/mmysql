@@ -5,6 +5,7 @@
 #include "mmytable.h"
 
 char DELIMITER = '|';
+string RETURNFILENAME = "returnfile";
 
 mmytable::mmytable(){
     assert(true); /** @todo **/
@@ -81,7 +82,7 @@ void mmytable::parse(const string &fileline, const char delimiter){
     mmyint lineid; //id value prefixed at start of the string
 
     //read from file into tables
-    cout << fileline << endl;
+//    cout << fileline << endl;
     for(mmyint i = 0; i < length; i++){
         if(fileline[i] == delimiter){
             subs = fileline.substr(i_start, i - i_start);
@@ -99,37 +100,89 @@ void mmytable::parse(const string &fileline, const char delimiter){
     }
 }
 
-//Takes field constraints. Returns 2d table of relevant data.
-multimap<mmyint, string>& mmytable::select(const vector<string>& fields,
-                                           const string& constraints){
-    multimap<mmyint, string> selection;
+//return a vector of strings, parsed from a fileline syntax, and based on set
+vector<string> mmytable::vector_parse(const string& fileline,
+                            const set<unsigned long>& fieldset){
+    //Again, we assume it holds the proper format of:
+    //"123|Crane|Stephen|etc|"
+    //->vector<string> of {"Crane", "Stephen", "etc"}
+    //set indicates which fields to take
+    //an empty set indicates take ALL fields
+    mmyint length = fileline.size();
+    size_t i_start=0; //start/end of substring
+    size_t count = 0;
+    string subs;
+    mmyint lineid; //id value prefixed at start of the string
+    vector<string> results;
 
-    return selection;
+    for(mmyint i = 0; i < length; i++){
+        //fieldset starts at 0, and links with field 0 (not id#)
+        if(!fieldset.empty() && fileline[i] != DELIMITER && fieldset.find(count-1)==fieldset.end()){
+            if(fileline[i] == DELIMITER){
+                count++;
+                i_start = i+1;
+            }
+            continue;
+        }
+        if(fileline[i] == DELIMITER){
+            subs = fileline.substr(i_start, i - i_start);
+            results.push_back(subs);
+            i_start = i+1;
+            count++;
+            continue;
+        }
+    }
+    return results;
+}
+
+//Takes field constraints. Returns 2d table of relevant data.
+//if fields is an empty vector, then we return all fields
+void mmytable::select(ofstream& filestream, const string& constraints,
+                                           const vector<string>& fields){
+    //Constraint format:
+    //"where "fieldname >= comparee and fieldname2 = comparee2...""
+    //Generate our constraint processing tree
+    mmyshunting constraint_processor(constraints);
+
+    constraint_processor.print();
+
+    set<mmyint> idnums = constraint_processor.get_ids(__itables);
+//    set<mmyint> idnums = constraint_processor.get_ids()
+
+    constraint_processor.print();
+    cout << "ID#s: " << idnums << endl;
+
+    //if the vector fields is empty, then return all fields
+    if(fields.empty()){
+        vector<string> fieldnames;
+        for(auto it = __fields.begin(); it != __fields.end(); it++)
+            fieldnames.push_back((*it).val);
+        filestream << fieldnames << endl;
+//        writer returnfile(RETURNFILENAME, fieldnames);
+        for(auto it = idnums.begin(); it != idnums.end(); it++){
+            vector<string> v = vector_parse(rec.get_line((*it)));
+            filestream << v << endl;
+        }
+
+    }else{
+        set<unsigned long> fields_set;
+        set<string> field_temp;
+        //Get the corresponding field order
+        for(auto it = fields.begin(); it != fields.end(); it++)
+            field_temp.insert(*it);
+        for(auto it = __fields.begin(); it != __fields.end(); it++)
+            if(field_temp.find(*it) != field_temp.end())
+                fields_set.insert((*it).key);
+    }
 }
 //Select * From ... where constraints
 //Based on constraints. Returns all fields data.
-multimap<mmyint, string>& mmytable::select(const string& constraints){
-    multimap<mmyint, string> selection;
-//    vector<mmyint> idnums;
-    set<mmyint> idnums; //All initial idnums
+//multimap<mmyint, string>& mmytable::select(const string& constraints){
+//    multimap<mmyint, string> selection;
 
-//    //Apply constraints and filter out non-matches
-//    for(size_t i = 0; i < __fields.size(); i++){
-//        vector<mmyint> tempids;
-//        //Get all matching ID#s into a vector
-//        for(auto it = __itables[__fields[i]].begin();
-//            it!= __itables[__fields[i]].end();
-//            it++){
 
-//            add_sorted(tempids, (*it).vec); //Make sure our set is sorted using my function
-
-//        }
-//        //Here do an intersection/union of idnums vs tempids
-//        //Get the new idnums, which represents the inner
-//    }
-
-    return selection;
-}
+//    return selection;
+//}
 
 //Get a vector of all id#s that pass the comparison
 vector<mmyint>& vector_filter(const string& fieldname,

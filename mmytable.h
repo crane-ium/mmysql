@@ -13,6 +13,8 @@
 #include "mmyshunting.h"
 
 extern char DELIMITER;
+extern string RETURNFILENAME;
+typedef unsigned long mmyint;
 
 enum class bugflag {none, light, medium, heavy};
 static const bugflag debug = bugflag::none;
@@ -88,6 +90,14 @@ struct record{
     }
     size_t get_fields() const{
         return _fields;
+    }
+    //Returns the string for the line at bytes
+    string& get_line(const mmyint bytes){
+        if(open()){
+            _ifstream.seekg(bytes);
+            getline(_ifstream, _lastrecord);
+            return _lastrecord;
+        }
     }
     bool set_file(const string& filename){
         if(_init)
@@ -228,7 +238,6 @@ struct record{
     bool _lastrecordflag; //checks if it's been retrieved yet or not
 };
 
-typedef unsigned long mmyint;
 /**
  * @brief mmysql database, main-memory storage
  * Uses my multimaps
@@ -246,12 +255,18 @@ public:
     void init(const string& table_name); //define table to access
     void field_add_all(const vector<string>& fieldnames);
     void field_add(const string& field_name); //Add field to __itable
-    void parse(const string& fileline, const char delimiter='|');
+    void parse(const string& fileline,
+               const char delimiter='|');
+    //Turns a line read from file into a vector of strings
+    vector<string> vector_parse(const string& fileline,
+                                const set<unsigned long>& fieldset=set<unsigned long>());
     bool read_file();
 
     //Selection
-    multimap<mmyint, string>& select(const vector<string>& fields, const string &constraints);
-    multimap<mmyint, string>& select(const string& constraints);
+    void select(ofstream &filestream, const string &constraints,
+                                     const vector<string> &fields=vector<string>()
+                                    );
+//    multimap<mmyint, string>& select(const string& constraints);
 
     void insert(vector<string> &fieldnames);
     friend vector<mmyint>& vector_filter(const string& fieldname,

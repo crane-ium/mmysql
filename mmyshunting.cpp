@@ -3,13 +3,11 @@
 debugger DBG = debugger::heavy;
 
 mmynode* parse_to_tree(const string& s){
-    /** @todo Use parse tree algorithm instead, MUCH faster **/
     mmynode* root = nullptr;
     mmynode* child = nullptr;
-    mmynode* right = nullptr;
     mmynode* notchild = nullptr;
     //boolean operator indeces, and comparison operator indeces
-    set<size_t> bool_indeces, op_indeces; //places where operators were found (starting index)
+//    set<size_t> bool_indeces, op_indeces; //places where operators were found (starting index)
     size_t length = s.length();
 
     if(DBG >= debugger::light)
@@ -52,6 +50,7 @@ mmynode* parse_to_tree(const string& s){
             continue;
         }
         if(mystate == state::getnextblock){
+            /** @todo add in NOT unary operation **/
             //Process the comparison operators
             string temp="";
             size_t index = 0;
@@ -62,6 +61,7 @@ mmynode* parse_to_tree(const string& s){
                 size_t i_left = i;
                 bool hasword = false; //Move i up until the next word begins
                 bool inquote = false;
+                size_t quoteend = 0;
                 for(i=i; i < length;i++){
                     if(!hasword && isspace(s[i])){
                         i_left++;
@@ -70,13 +70,21 @@ mmynode* parse_to_tree(const string& s){
                     hasword = true;
                     if(s[i] == '\"'){
                         inquote ^= true;
+                        if(inquote)
+                            i_left = i+1;
+                        else
+                            quoteend = i;
                         continue;
                     }
                     if(!inquote && parsetree::in_set(s[i], PREOPERATORS)){
                         break;
                     }
                 }
-                string right = mmytrim(s, i_left, i);
+                string right;
+                if(quoteend)
+                    right = mmytrim(s, i_left, quoteend);
+                else
+                    right = mmytrim(s, i_left, i);
                 mmynode* tempnode = new mmynode(temp);
                 tempnode->ttype = tokentype::comparitor;
                 tempnode->left = new mmynode(left);
@@ -107,10 +115,12 @@ mmynode* parse_to_tree(const string& s){
             i += temp.size();
             if(!root){//nullptr
                 root = new mmynode(temp, child);
+                root->ttype = tokentype::boolean;
                 child = nullptr;
             }else{
                 mmynode* tempnode = new mmynode(temp, root);
                 root = tempnode;
+                root->ttype = tokentype::boolean;
             }
             b_left = i+1;
             mystate = state::getnextblock;
@@ -132,6 +142,67 @@ mmynode* parse_to_tree(const string& s){
     return root;
 }
 
+void mmynode::generate_ids(simple_map<string, multimap<string, unsigned long> >& map){
+    if(ttype != tokentype::comparitor){
+        if(left)
+            left->generate_ids(map);
+        if(right)
+            right->generate_ids(map);
+        return;
+    }
+    //Generate ids
+    unsigned long comparee_ul;
+    bool ulflag = false;
+    try{
+        comparee_ul = stoul(right->val);
+        ulflag = true;
+    }catch(...){
+        if(DBG>=debugger::heavy)
+            cout << "Cannot string to u long: " << right->val << endl;
+    }
+    for(auto it = map[left->val].begin(); it != map[left->val].end(); it++){
+        if(ulflag){
+            try{
+                unsigned long it_ul = std::stoul((*it).key);
+                if(compare_fields(it_ul, comparee_ul, val)){
+                    idnums += (*it).vec;
+                }
+                continue;
+            }catch(...){
+                if(DBG>=debugger::light)
+                    cout << "[MMYNODE] Failed to compare as ul\n";
+            }
+        }
+        if(compare_fields((*it).key, right->val, val)){
+            idnums += (*it).vec;
+        }
+    }
+    //MAYBE not necessary, but just for cleanliness
+    delete left;
+    delete right;
+    left = nullptr;
+    right = nullptr;
+}
+
+set<unsigned long> mmynode::get_ids(){
+    if(ttype == tokentype::boolean){
+        if(val == "and"){
+            return left->get_ids()*right->get_ids();
+        }else if(val == "or"){
+            return left->get_ids()+right->get_ids();
+        }else if(val == "xor"){
+            return left->get_ids()^right->get_ids();
+        }
+    }else{
+        return idnums;
+    }
+}
+
+set<unsigned long> mmynode::get_ids(simple_map<string, multimap<string, unsigned long> >& map){
+    generate_ids(map);
+    return get_ids();
+}
+
 string mmytrim(const string& s, size_t left, size_t right){
     while(isspace(s[left]))
         left++;
@@ -142,4 +213,68 @@ string mmytrim(const string& s, size_t left, size_t right){
 //    size_t p_right = 0;
 //    if(s[left] != '(' && s[right-1] != ')')
     return s.substr(left, right-left);
+}
+
+
+//Compare two variables based on a given comparitor
+bool compare_fields(const unsigned long& left, const unsigned long& right, const string& comparee){
+    if(comparee == "=" or comparee == "==")
+        return left == right;
+    else if(comparee == ">")
+        return left > right;
+    else if(">=")
+        return left >= right;
+    else if("<")
+        return left < right;
+    else if("<=")
+        return left <= right;
+    else if("!=")
+        return left != right;
+
+    if(DBG>=debugger::none)
+        cout << "Failed to reach a comparison, crashing...\n";
+    assert(false);
+}
+//Compare lexicographically
+bool compare_fields(const string&left, const string&right, const string &comparee){
+    size_t left_size = left.size();
+    size_t right_size = right.size();
+    size_t smaller_size = (left_size<right_size ? left_size : right_size);
+
+    if(comparee == "=" or comparee == "=="){
+        return left == right;
+    }else if(comparee == ">"){
+        for(size_t i = 0; i < smaller_size; i++){
+            if(left[i] != right[i])
+                return left[i] > right[i];
+        }
+        //Then they are identical through the iteration
+        //Determine based on size which is larger
+        return (left_size != right_size ?
+                    (left_size > right_size ? true:false):false);
+    }else if(">="){
+        for(size_t i = 0; i < smaller_size; i++){
+            if(left[i] != right[i])
+                return left[i] > right[i];
+        }
+        return (left_size >= right_size ? true:false);
+    }else if("<"){
+        for(size_t i = 0; i < smaller_size; i++){
+            if(left[i] != right[i])
+                return left[i] < right[i];
+        }
+        return (left_size != right_size ?
+                    (left_size < right_size ? true:false):false);
+    }else if("<="){
+        for(size_t i = 0; i < smaller_size; i++){
+            if(left[i] != right[i])
+                return left[i] < right[i];
+        }
+        return (left_size <= right_size ? true:false);
+    }else if("!=")
+        return left != right;
+
+    if(DBG>=debugger::none)
+        cout << "Failed to reach a comparison, crashing...\n";
+    assert(false);
 }
