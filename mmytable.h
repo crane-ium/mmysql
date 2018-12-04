@@ -112,7 +112,7 @@ struct record{
         vector<string> emptyvec{""};
         return insert(emptyvec);
     }
-    bool insert(vector<string>& svec){
+    unsigned long insert(vector<string>& svec){
 //        init();
         //Verify that the svec fits the dataframe
 //    if(svec.size() == _fields - 1){
@@ -122,7 +122,7 @@ struct record{
         //binary flag at the same location.
         if(!fs.is_open()){
             if(debug == bugflag::none) cout << "[ERROR] record.insert: file dne\n";
-            return false;
+            return 0;
         }
         //should not have an id associated, yet. We will give it that
         fs << fsize << _delimiter;
@@ -137,7 +137,7 @@ struct record{
         }
         fs << '\n'; //endline
         fs.close();
-        return true; //inserted successfully
+        return fsize; //inserted successfully
 //    }
     }
     string& next(){ //Return the next record from file
@@ -273,9 +273,10 @@ public:
     friend vector<mmyint>& vector_filter(const string& fieldname,
                                          const string& op,
                                          const string& comp);
+    void set_delimiter(const char new_delimiter){DELIMITER=new_delimiter;}
 
 //    void create(const string& table_name, const string &strs, ...); //REMOVED FEATURE
-//private:
+//private: /** @todo reset private **/
     //__itables[fieldname][targetname]
     //OR set it to use a hash to store the multiple tables
     simple_map<string, multimap<string, mmyint> > __itables; //Index Tables
@@ -291,5 +292,8 @@ public:
     record rec; //My record
 //    void add_field(const string& strs, ...); //REMOVED FEATURE
 };
-
+//HELPER FUNCTIONS
+namespace mmyhelper{
+    void stream_vecstring(ofstream& filestream, const vector<string>& vstr);
+}
 #endif // MMYTABLE_H

@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
     vector<string> data0{"Crane", "Stephen", "120", "Statistics"};
     vector<string> data1{"Blow", "Joe", "15", "Math"};
     vector<string> data2{"Barkeshli", "Sassan", "100", "CS"};
+    vector<string> data3{"Stack", "Bryan", "20", "CS"};
+    vector<string> data4{"Grey", "Chris", "20000", "Computer Science"};
 //    writer w("test", fields);
 //    rec.set_file("test");
 //    rec.insert(data0);
@@ -28,7 +30,8 @@ int main(int argc, char *argv[])
 //    rec.insert(data2);
 
     mmytable table("test");
-
+    table.insert(data3);
+    table.insert(data4);
     cout << table.__itables << endl;
 
     string s = "age>15 or fname = Joe or (major = \"Statistics\" or major=CS)";

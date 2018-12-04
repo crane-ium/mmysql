@@ -24,9 +24,12 @@ public:
     //return a 2d table with with requested fields
 //    vector<vector<string> >& select(vector<string>& fields);
 private:
-    simple_map<string, mmytable> __tables; //Multitable access
+//    simple_map<string, mmytable> __tables; //Multitable access
+    simple_map<string, mmytable> __database;
+    string __line;
+    string __constraint;
+    vector<string> __history; //History of user's data
 };
-
 
 class mmysql_user{
 public:

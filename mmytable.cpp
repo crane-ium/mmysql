@@ -60,7 +60,8 @@ void mmytable::field_add(const string &field_name){
 }
 
 void mmytable::insert(vector<string>& fieldnames){
-    rec.insert(fieldnames);
+    unsigned long line = rec.insert(fieldnames);
+    parse(rec.get_line(line), __delimiter);
 }
 
 /**
@@ -150,7 +151,6 @@ void mmytable::select(ofstream& filestream, const string& constraints,
 //    set<mmyint> idnums = constraint_processor.get_ids()
 
     constraint_processor.print();
-    cout << "ID#s: " << idnums << endl;
 
     //if the vector fields is empty, then return all fields
     if(fields.empty()){
@@ -161,8 +161,8 @@ void mmytable::select(ofstream& filestream, const string& constraints,
 //        writer returnfile(RETURNFILENAME, fieldnames);
         for(auto it = idnums.begin(); it != idnums.end(); it++){
             vector<string> v = vector_parse(rec.get_line((*it)));
-            cout << "vector: " << v << endl;
-            filestream << v << endl;
+//            filestream << v << endl;
+            mmyhelper::stream_vecstring(filestream, v);
         }
     }else{
         set<unsigned long> fields_set;
@@ -173,6 +173,10 @@ void mmytable::select(ofstream& filestream, const string& constraints,
         for(auto it = __fields.begin(); it != __fields.end(); it++)
             if(field_temp.find(*it) != field_temp.end())
                 fields_set.insert((*it).key);
+        for(auto it=idnums.begin(); it != idnums.end(); it++){
+            vector<string> v = vector_parse(rec.get_line((*it)));
+            mmyhelper::stream_vecstring(filestream, v);
+        }
     }
 }
 //Select * From ... where constraints
@@ -184,9 +188,21 @@ void mmytable::select(ofstream& filestream, const string& constraints,
 //    return selection;
 //}
 
-//Get a vector of all id#s that pass the comparison
-vector<mmyint>& vector_filter(const string& fieldname,
-                              const string& op,
-                              const string& comp){
+//----------------------------------------------------------------
+//HELPER FUNCTIONS
+//----------------------------------------------------------------
 
+//Put a vector of strings into a filestream in our format
+void mmyhelper::stream_vecstring(ofstream& filestream, const vector<string>& vstr){
+    for(auto vit = vstr.begin(); vit != vstr.end(); vit++){
+        filestream << *vit << DELIMITER;
+    }
+    filestream << '\n';
 }
+
+//Get a vector of all id#s that pass the comparison
+//vector<mmyint>& vector_filter(const string& fieldname,
+//                              const string& op,
+//                              const string& comp){
+
+//}
