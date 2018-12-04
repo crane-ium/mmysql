@@ -60,7 +60,25 @@ mmynode* parse_to_tree(const string &s);
 string mmytrim(const string& s, size_t left, size_t right);
 
 //Compare two variables based on a given comparitor
-bool compare_fields(const unsigned long& left, const unsigned long& right, const string& comparee);
+template<class numbertype, class compareetype>
+bool compare_fields(const numbertype& left, const compareetype& right, const string& comparee){
+    if(comparee == "=" or comparee == "==")
+        return left == static_cast<numbertype>(right);
+    else if(comparee == ">")
+        return left > static_cast<numbertype>(right);
+    else if(">=")
+        return left >= static_cast<numbertype>(right);
+    else if("<")
+        return left < static_cast<numbertype>(right);
+    else if("<=")
+        return left <= static_cast<numbertype>(right);
+    else if("!=")
+        return left != static_cast<numbertype>(right);
+
+    if(DBG>=debugger::none)
+        cout << "Failed to reach a comparison, crashing...\n";
+    assert(false);
+}
 //Compare lexicographically
 bool compare_fields(const string&left, const string&right, const string &comparee);
 

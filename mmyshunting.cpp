@@ -143,6 +143,7 @@ mmynode* parse_to_tree(const string& s){
 }
 
 void mmynode::generate_ids(simple_map<string, multimap<string, unsigned long> >& map){
+
     if(ttype != tokentype::comparitor){
         if(left)
             left->generate_ids(map);
@@ -150,27 +151,41 @@ void mmynode::generate_ids(simple_map<string, multimap<string, unsigned long> >&
             right->generate_ids(map);
         return;
     }
+    enum class comparee_type {str, ul, db, ll};
     //Generate ids
-    unsigned long comparee_ul;
-    bool ulflag = false;
+    double comparee_ul;
+    comparee_type cflag = comparee_type::str;
     try{
-        comparee_ul = stoul(right->val);
-        ulflag = true;
+        //Check for decimal and negative sign
+        /** @todo **/
+//        bool decimal = false;
+//        bool negative = false;
+//        if(right->val[0] == '-')
+//            negative = true;
+//        if(right->val.find('.', 1))
+//            decimal = true;
+
+        comparee_ul = stod(right->val);
+        cflag = comparee_type::db;
     }catch(...){
         if(DBG>=debugger::heavy)
             cout << "Cannot string to u long: " << right->val << endl;
     }
     for(auto it = map[left->val].begin(); it != map[left->val].end(); it++){
-        if(ulflag){
+        if(cflag==comparee_type::db){
             try{
-                unsigned long it_ul = std::stoul((*it).key);
-                if(compare_fields(it_ul, comparee_ul, val)){
+//                unsigned long it_ul = std::stoul((*it).key);
+                double it_db= std::stod((*it).key);
+                if(compare_fields(it_db, comparee_ul, val)){
                     idnums += (*it).vec;
                 }
                 continue;
             }catch(...){
                 if(DBG>=debugger::light)
                     cout << "[MMYNODE] Failed to compare as ul\n";
+//                if(compare_fields((*it).key, right->val, val))
+//                    idnums += (*it).vec;
+//                continue;
             }
         }
         if(compare_fields((*it).key, right->val, val)){
@@ -215,26 +230,6 @@ string mmytrim(const string& s, size_t left, size_t right){
     return s.substr(left, right-left);
 }
 
-
-//Compare two variables based on a given comparitor
-bool compare_fields(const unsigned long& left, const unsigned long& right, const string& comparee){
-    if(comparee == "=" or comparee == "==")
-        return left == right;
-    else if(comparee == ">")
-        return left > right;
-    else if(">=")
-        return left >= right;
-    else if("<")
-        return left < right;
-    else if("<=")
-        return left <= right;
-    else if("!=")
-        return left != right;
-
-    if(DBG>=debugger::none)
-        cout << "Failed to reach a comparison, crashing...\n";
-    assert(false);
-}
 //Compare lexicographically
 bool compare_fields(const string&left, const string&right, const string &comparee){
     size_t left_size = left.size();

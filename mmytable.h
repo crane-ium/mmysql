@@ -96,6 +96,7 @@ struct record{
         if(open()){
             _ifstream.seekg(bytes);
             getline(_ifstream, _lastrecord);
+//            cout << "LAST REC: " << bytes << ", " << _lastrecord << endl;
             return _lastrecord;
         }
     }

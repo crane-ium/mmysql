@@ -44,4 +44,5 @@ else:unix: PRE_TARGETDEPS += $$PWD/../state_machine/libstate_machine.a
 DISTFILES += \
     ../test.bin \
     test.bin \
-    resultsfile.bin
+    resultsfile.bin \
+    work_report.txt

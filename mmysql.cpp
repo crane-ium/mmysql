@@ -5,6 +5,6 @@
 #include "mmysql.h"
 
 
-vector<vector<string> >& mmysql::select(vector<string>& fields){
+//vector<vector<string> >& mmysql::select(vector<string>& fields){
 
-}
+//}

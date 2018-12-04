@@ -5,4 +5,6 @@ release/
 MakeFile*
 .bin
 
+object_script.MMY*
+
 

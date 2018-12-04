@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 
     cout << table.__itables << endl;
 
-    string s = "age>15 or fname = Joe xor (major = \"Statistics\" or major=CS)";
+    string s = "age>15 or fname = Joe or (major = \"Statistics\" or major=CS)";
 
     ofstream resultsfile("resultsfile.bin", ios::binary);
     table.select(resultsfile, s);
@@ -45,6 +45,9 @@ int main(int argc, char *argv[])
     cout << result << endl;
     result = s1^s2;
     cout << result << endl;
+
+    simple_map<string, long> lexo;
+
 
 //    string s = "(last = \"Van Gogh\" or last = Jackson and salary >= 165000) or (andandor = 5)";
 

@@ -1,0 +1,7 @@
+Goals:
+-Be able to parse a float from a string, so that way our program can
+ denote it as such.
+
+Issues:
+-Problem when rec.readline not finding the line, but fixed itself when I
+ remade the database file.

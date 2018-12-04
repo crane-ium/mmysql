@@ -161,9 +161,9 @@ void mmytable::select(ofstream& filestream, const string& constraints,
 //        writer returnfile(RETURNFILENAME, fieldnames);
         for(auto it = idnums.begin(); it != idnums.end(); it++){
             vector<string> v = vector_parse(rec.get_line((*it)));
+            cout << "vector: " << v << endl;
             filestream << v << endl;
         }
-
     }else{
         set<unsigned long> fields_set;
         set<string> field_temp;

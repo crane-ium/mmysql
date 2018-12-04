@@ -22,7 +22,7 @@ public:
     //MEMBER FUNCTIONS
 
     //return a 2d table with with requested fields
-    vector<vector<string> >& select(vector<string>& fields);
+//    vector<vector<string> >& select(vector<string>& fields);
 private:
     simple_map<string, mmytable> __tables; //Multitable access
 };

@@ -1,2 +1,4 @@
 {lname, fname, age, major}
+{24, Crane, Stephen, 120, Statistics}
 {57, Blow, Joe, 15, Math}
+{78, Barkeshli, Sassan, 100, CS}
