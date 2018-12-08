@@ -11,6 +11,7 @@
 #include "../bplustree_mmap/multimap.h"
 #include "../bplustree_mmap/map.h"
 #include "mmyshunting.h"
+#include "sethelper.h"
 
 extern char DELIMITER;
 extern string RETURNFILENAME;
@@ -21,6 +22,7 @@ static const bugflag debug = bugflag::none;
 
 /**
  * @brief Initializes a table-file if dne
+ *
  */
 struct writer{
     writer(const string& filename,
@@ -124,7 +126,7 @@ struct record{
             if(debug == bugflag::none) cout << "[ERROR] record.insert: file dne\n";
             return 0;
         }
-        //should not have an id associated, yet. We will give it that
+        //should not have an id associated, yet. We will give it an ID#
         fs << fsize << _delimiter;
         //then insert new data at end
         vector<string>::iterator it = svec.begin();
@@ -260,12 +262,12 @@ public:
                const char delimiter='|');
     //Turns a line read from file into a vector of strings
     vector<string> vector_parse(const string& fileline,
-                                const set<unsigned long>& fieldset=set<unsigned long>());
+                                const simple_map<mmyint, string> &fieldset=simple_map<mmyint, string>());
     bool read_file();
 
     //Selection
-    void select(ofstream &filestream, const string &constraints,
-                                     const vector<string> &fields=vector<string>()
+    void select(fstream &filestream, const string &constraints,
+                                     vector<string> fields=vector<string>()
                                     );
 //    multimap<mmyint, string>& select(const string& constraints);
 
@@ -282,6 +284,7 @@ public:
     simple_map<string, multimap<string, mmyint> > __itables; //Index Tables
 
     simple_map<mmyint, string> __fields; //field-column data to read from-to string
+//    simple_map<string, mmyint> __field_ids; //key: val pair of fieldname to id# order
 
     bool __init; //already initialized table flag
     string __name; //Name of the table it is storing
@@ -294,6 +297,8 @@ public:
 };
 //HELPER FUNCTIONS
 namespace mmyhelper{
-    void stream_vecstring(ofstream& filestream, const vector<string>& vstr);
+    void stream_vecstring(fstream &filestream,
+                          const vector<string>& vstr,
+                          bool write_idflag=false);
 }
 #endif // MMYTABLE_H

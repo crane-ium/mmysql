@@ -1,10 +1,10 @@
-{lname, fname, age, major}
-24|Crane|Stephen|120|Statistics|
-57|Blow|Joe|15|Math|
-78|Barkeshli|Sassan|100|CS|
-106|Stack|Bryan|20|CS|
-129|Grey|Chris|20000|Computer Science|
-168|Stack|Bryan|20|CS|
-191|Grey|Chris|20000|Computer Science|
-230|Stack|Bryan|20|CS|
-253|Grey|Chris|20000|Computer Science|
+|lname|fname|Does not exist|
+29|Crane|Stephen|
+47|Blow|Joe|
+60|Barkeshli|Sassan|
+81|Stack|Bryan|
+97|Grey|Chris|
+112|Stack|Bryan|
+129|Grey|Chris|
+145|Stack|Bryan|
+162|Grey|Chris|

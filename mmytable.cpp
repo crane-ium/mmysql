@@ -57,6 +57,7 @@ void mmytable::field_add(const string &field_name){
     size_t fsize = __itables.size();
     __itables.insert(field_name);
     __fields[fsize] = field_name; //Associate the column to field. For file read/write
+//    __field_ids[field_name] = fsize;
 }
 
 void mmytable::insert(vector<string>& fieldnames){
@@ -103,7 +104,7 @@ void mmytable::parse(const string &fileline, const char delimiter){
 
 //return a vector of strings, parsed from a fileline syntax, and based on set
 vector<string> mmytable::vector_parse(const string& fileline,
-                            const set<unsigned long>& fieldset){
+                            const simple_map<mmyint, string>& fieldset){
     //Again, we assume it holds the proper format of:
     //"123|Crane|Stephen|etc|"
     //->vector<string> of {"Crane", "Stephen", "etc"}
@@ -111,23 +112,33 @@ vector<string> mmytable::vector_parse(const string& fileline,
     //an empty set indicates take ALL fields
     mmyint length = fileline.size();
     size_t i_start=0; //start/end of substring
-    size_t count = 0;
-    string subs;
-    mmyint lineid; //id value prefixed at start of the string
+    mmyint count = 0;
+    string subs; //temp substring between delimiters
     vector<string> results;
 
     for(mmyint i = 0; i < length; i++){
         //fieldset starts at 0, and links with field 0 (not id#)
-        if(!fieldset.empty() && fileline[i] != DELIMITER && fieldset.find(count-1)==fieldset.end()){
-            if(fileline[i] == DELIMITER){
-                count++;
-                i_start = i+1;
-            }
+        if(count == 0 && fileline[i] != DELIMITER)
+            continue;
+        else if(count==0){
+            count++;
+            i_start = i+1;
             continue;
         }
+//        if(!fieldset.empty() && fileline[i] != DELIMITER
+//                && fieldset.find(count-1)==fieldset.end()){
+//            if(fileline[i] == DELIMITER){
+//                count++;
+//                i_start = i+1;
+//            }
+//            continue;
+//        }
         if(fileline[i] == DELIMITER){
-            subs = fileline.substr(i_start, i - i_start);
-            results.push_back(subs);
+            //Check if field is in constraints set
+            if(fieldset.empty() || fieldset.exists(count-1)){
+                subs = fileline.substr(i_start, i - i_start);
+                results.push_back(subs);
+            }
             i_start = i+1;
             count++;
             continue;
@@ -138,44 +149,60 @@ vector<string> mmytable::vector_parse(const string& fileline,
 
 //Takes field constraints. Returns 2d table of relevant data.
 //if fields is an empty vector, then we return all fields
-void mmytable::select(ofstream& filestream, const string& constraints,
-                                           const vector<string>& fields){
+void mmytable::select(fstream& filestream,
+                      const string& constraints,
+                      vector<string> fields){
     //Constraint format:
     //"where "fieldname >= comparee and fieldname2 = comparee2...""
     //Generate our constraint processing tree
     mmyshunting constraint_processor(constraints);
 
-    constraint_processor.print();
-
+//    constraint_processor.print();
     set<mmyint> idnums = constraint_processor.get_ids(__itables);
-//    set<mmyint> idnums = constraint_processor.get_ids()
-
-    constraint_processor.print();
+//    constraint_processor.print();
 
     //if the vector fields is empty, then return all fields
     if(fields.empty()){
+        //In this block:
+        //  Create control vector for the fieldnames
+        //  Build file header of the fields
+        //  Insert the matched fields/id#s into the new temporary return-file
         vector<string> fieldnames;
         for(auto it = __fields.begin(); it != __fields.end(); it++)
             fieldnames.push_back((*it).val);
-        filestream << fieldnames << endl;
-//        writer returnfile(RETURNFILENAME, fieldnames);
+        filestream << DELIMITER; //start the file with the delimiter
+        //Use helper function to insert vector of fieldnames into a fstream
+        mmyhelper::stream_vecstring(filestream, fieldnames);
         for(auto it = idnums.begin(); it != idnums.end(); it++){
             vector<string> v = vector_parse(rec.get_line((*it)));
 //            filestream << v << endl;
-            mmyhelper::stream_vecstring(filestream, v);
+            mmyhelper::stream_vecstring(filestream, v, true);
         }
     }else{
-        set<unsigned long> fields_set;
-        set<string> field_temp;
-        //Get the corresponding field order
-        for(auto it = fields.begin(); it != fields.end(); it++)
-            field_temp.insert(*it);
-        for(auto it = __fields.begin(); it != __fields.end(); it++)
-            if(field_temp.find(*it) != field_temp.end())
-                fields_set.insert((*it).key);
+        //Given field parameters,
+        //  find the associated fields to pull from the file
+        //Build a quickmap so we can get our fields and put them inorder
+        simple_map<string, mmyint> temp_field_ids;
+        simple_map<mmyint, string> field_set;
+        for(auto it=__fields.begin();it != __fields.end(); it++){
+            temp_field_ids[(*it).val] = (*it).key;
+        }
+        //Now that we have a clean temporary memoization, let's
+        //  build a quick vector of fields
+        for(auto it=fields.begin();it!=fields.end();it++){
+            if(temp_field_ids.exists(*it))
+                field_set.insert(temp_field_ids[*it]);
+            else //Remove invalid fields from our constraints?
+                fields.erase(it);
+        }
+        filestream << DELIMITER; //start the file with the delimiter
+        mmyhelper::stream_vecstring(filestream, fields); //write our fields to file
+        cout << "Fields: " << field_set << endl;
+        cout << "temp fields: " << temp_field_ids << endl;
+//        cout << "field_temp: " << field_temp << endl;
         for(auto it=idnums.begin(); it != idnums.end(); it++){
-            vector<string> v = vector_parse(rec.get_line((*it)));
-            mmyhelper::stream_vecstring(filestream, v);
+            vector<string> v = vector_parse(rec.get_line((*it)), field_set);
+            mmyhelper::stream_vecstring(filestream, v, true);
         }
     }
 }
@@ -193,7 +220,14 @@ void mmytable::select(ofstream& filestream, const string& constraints,
 //----------------------------------------------------------------
 
 //Put a vector of strings into a filestream in our format
-void mmyhelper::stream_vecstring(ofstream& filestream, const vector<string>& vstr){
+void mmyhelper::stream_vecstring(fstream& filestream,
+                                 const vector<string>& vstr,
+                                 bool write_idflag){
+    //If the writer wants to write the ID# at the start of the line
+    //  fetch the filestream cursor index and use that as new ID#
+    if(write_idflag){
+        filestream << filestream.tellg() << DELIMITER;
+    }
     for(auto vit = vstr.begin(); vit != vstr.end(); vit++){
         filestream << *vit << DELIMITER;
     }

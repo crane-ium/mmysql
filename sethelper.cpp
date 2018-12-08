@@ -7,17 +7,7 @@ std::set<unsigned long>& operator +=(std::set<unsigned long>& lhs, const std::ve
     }
     return lhs;
 }
-//cout a set
-std::ostream& operator <<(std::ostream& outs, const std::set<unsigned long>& rhs){
-    outs << "set<ul>: {";
-    for(auto it = rhs.begin(); it != rhs.end(); it++){
-        if(it != rhs.begin())
-            outs << ", ";
-        outs << (*it);
-    }
-    outs << "}";
-    return outs;
-}
+
 //Set join
 ulset operator+(const ulset& lhs, const ulset& rhs){
     ulset copy = lhs;

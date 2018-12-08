@@ -30,14 +30,14 @@ int main(int argc, char *argv[])
 //    rec.insert(data2);
 
     mmytable table("test");
-    table.insert(data3);
-    table.insert(data4);
     cout << table.__itables << endl;
+
+    vector<string> allowedfields{"lname", "fname", "Does not exist"};
 
     string s = "age>15 or fname = Joe or (major = \"Statistics\" or major=CS)";
 
-    ofstream resultsfile("resultsfile.bin", ios::binary);
-    table.select(resultsfile, s);
+    fstream resultsfile("resultsfile.bin", ios::binary | ios::out | ios::ate);
+    table.select(resultsfile, s, allowedfields);
 
     set<unsigned long> s1{1, 2, 3, 4};
     set<unsigned long> s2{3, 4, 5, 6};
@@ -51,6 +51,10 @@ int main(int argc, char *argv[])
 
     simple_map<string, long> lexo;
 
+    simple_map<string, string> nondefault(false);
+    nondefault.insert("one","ONE!");
+    cout << nondefault["one"] << endl;
+//    cout << nondefault["two"] << endl;
 
 //    string s = "(last = \"Van Gogh\" or last = Jackson and salary >= 165000) or (andandor = 5)";
 

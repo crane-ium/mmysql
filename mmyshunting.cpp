@@ -169,7 +169,7 @@ void mmynode::generate_ids(simple_map<string, multimap<string, unsigned long> >&
         cflag = comparee_type::db;
     }catch(...){
         if(DBG>=debugger::heavy)
-            cout << "Cannot string to u long: " << right->val << endl;
+            cout << "Cannot string to double (stod): " << right->val << endl;
     }
     for(auto it = map[left->val].begin(); it != map[left->val].end(); it++){
         if(cflag==comparee_type::db){
