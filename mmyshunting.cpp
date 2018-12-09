@@ -5,9 +5,7 @@ debugger DBG = debugger::heavy;
 mmynode* parse_to_tree(const string& s){
     mmynode* root = nullptr;
     mmynode* child = nullptr;
-    mmynode* notchild = nullptr;
     //boolean operator indeces, and comparison operator indeces
-//    set<size_t> bool_indeces, op_indeces; //places where operators were found (starting index)
     size_t length = s.length();
 
     if(DBG >= debugger::light)
@@ -232,6 +230,7 @@ string mmytrim(const string& s, size_t left, size_t right){
 
 //Compare lexicographically
 bool compare_fields(const string&left, const string&right, const string &comparee){
+    if(DBG>=debugger::light) cout << "Using string compare_fields()\n";
     size_t left_size = left.size();
     size_t right_size = right.size();
     size_t smaller_size = (left_size<right_size ? left_size : right_size);

@@ -104,7 +104,8 @@ void mmytable::parse(const string &fileline, const char delimiter){
 
 //return a vector of strings, parsed from a fileline syntax, and based on set
 vector<string> mmytable::vector_parse(const string& fileline,
-                            const simple_map<mmyint, string>& fieldset){
+//                                      const vector<mmyint>& ordering,
+                            const vector<mmyint>& ordering){
     //Again, we assume it holds the proper format of:
     //"123|Crane|Stephen|etc|"
     //->vector<string> of {"Crane", "Stephen", "etc"}
@@ -115,6 +116,7 @@ vector<string> mmytable::vector_parse(const string& fileline,
     mmyint count = 0;
     string subs; //temp substring between delimiters
     vector<string> results;
+    simple_map<mmyint, string> fieldvalues;
 
     for(mmyint i = 0; i < length; i++){
         //fieldset starts at 0, and links with field 0 (not id#)
@@ -125,24 +127,29 @@ vector<string> mmytable::vector_parse(const string& fileline,
             i_start = i+1;
             continue;
         }
-//        if(!fieldset.empty() && fileline[i] != DELIMITER
-//                && fieldset.find(count-1)==fieldset.end()){
-//            if(fileline[i] == DELIMITER){
-//                count++;
-//                i_start = i+1;
-//            }
-//            continue;
-//        }
         if(fileline[i] == DELIMITER){
             //Check if field is in constraints set
-            if(fieldset.empty() || fieldset.exists(count-1)){
+            if(ordering.empty()){
                 subs = fileline.substr(i_start, i - i_start);
                 results.push_back(subs);
+            }else{
+                subs = fileline.substr(i_start, i - i_start);
+                fieldvalues[count-1] = subs;
             }
             i_start = i+1;
             count++;
             continue;
         }
+    }
+    if(!ordering.empty()){
+        results.resize(ordering.size());
+        for(size_t i = 0; i < ordering.size(); i++){
+            results[i] = fieldvalues[ordering[i]];
+        }
+//        if(debug >= bugflag::medium)
+        cout << "[mmytable] specified results: " << results << endl;
+        cout << "fv: " << fieldvalues << endl;
+        cout << "results: " << results << endl;
     }
     return results;
 }
@@ -161,6 +168,18 @@ void mmytable::select(fstream& filestream,
     set<mmyint> idnums = constraint_processor.get_ids(__itables);
     constraint_processor.print();
 
+    //Quick map representing string:column# for fields
+    simple_map<string, mmyint> temp_field_ids;
+    for(auto it=__fields.begin();it != __fields.end(); it++){
+        temp_field_ids[(*it).val] = (*it).key;
+    }
+    vector<mmyint> fieldorder; //Give it to reader so you put fields in order
+    for(auto it = fields.begin(); it != fields.end(); it++){
+        if(temp_field_ids.exists((*it)))
+            fieldorder.push_back(temp_field_ids[(*it)]);
+    }
+
+
     //if the vector fields is empty, then return all fields
     if(fields.empty()){
         //In this block:
@@ -175,17 +194,15 @@ void mmytable::select(fstream& filestream,
         mmyhelper::stream_vecstring(filestream, fieldnames);
         for(auto it = idnums.begin(); it != idnums.end(); it++){
             vector<string> v = vector_parse(rec.get_line((*it)));
+            //rearrange the given vector to match the proper ordering
             mmyhelper::stream_vecstring(filestream, v, true);
         }
     }else{
         //Given field parameters,
         //  find the associated fields to pull from the file
         //Build a quickmap so we can get our fields and put them inorder
-        simple_map<string, mmyint> temp_field_ids;
         simple_map<mmyint, string> field_set;
-        for(auto it=__fields.begin();it != __fields.end(); it++){
-            temp_field_ids[(*it).val] = (*it).key;
-        }
+
         //Now that we have a clean temporary memoization, let's
         //  build a quick vector of fields
         for(auto it=fields.begin();it!=fields.end();it++){
@@ -202,9 +219,10 @@ void mmytable::select(fstream& filestream,
         mmyhelper::stream_vecstring(filestream, fields); //write our fields to file
         cout << "Fields: " << field_set << endl;
         cout << "temp fields: " << temp_field_ids << endl;
-//        cout << "field_temp: " << field_temp << endl;
+        cout << "fieldorder: " << fieldorder << endl;
         for(auto it=idnums.begin(); it != idnums.end(); it++){
-            vector<string> v = vector_parse(rec.get_line((*it)), field_set);
+            vector<string> v = vector_parse(rec.get_line((*it)), fieldorder);
+            assert(fieldorder.size() == v.size());
             mmyhelper::stream_vecstring(filestream, v, true);
         }
     }

@@ -7,9 +7,13 @@
 #include <sstream>
 #include <iostream>
 #include <queue>
+#include <iomanip>
 #include "mmytable.h" //read/writes from/to database. SQL gives commands
+#include "mmyenums.h"
 
 using namespace std;
+
+extern string DEFAULTRETURNFILE;
 
 /**
  * @brief Interact with database
@@ -17,39 +21,7 @@ using namespace std;
 class mmysql
 {
 public:
-    //DECLARE OUR MODES/STATES FOR OUR STATEMACHINE
-    enum class token{none, modename, fieldname, tablename, constraint};
-    enum class mode {start=0, select=1, create=2, make=6,
-                     insert=3, exit=4, history=5, DEFAULT=mode::start};
-    //This array is used for a ranged for loop
-    mode modelist[7] = {mode::start, mode::select, mode::create, mode::make,
-                       mode::insert, mode::exit, mode::history};
-    enum class state{start, tablekey, fieldskey, intokey, fromkey,
-                     valueskey, wherekey, getfields, getconstraint,
-                     gettable, getvalues, DEFAULT=state::start};
-    //I am going ot use stateflags like integer representations
-    //  of bits, so I can do clean bitwise operations
-    /** @def sf = stateflag **/
-    enum class sf{none=0x00, allowcomma=0x01, allowstring=0x02,
-                  allowquotes=0x04, repeatable=0x08, allowasterisk=0x10,
-                  getall=0x20, DEFAULT=sf::none};
-    sf sflist[7] = {sf::none, sf::allowasterisk, sf::allowcomma,
-                    sf::allowstring, sf::allowquotes,
-                    sf::repeatable, sf::getall};
-    //Give it a bitwise pipe for combining flags
-    inline friend sf operator |(sf lhs, sf rhs){
-        sf piped = static_cast<sf>(static_cast<int>(lhs) | static_cast<int>(rhs));
-        return piped;
-    }
-    inline friend sf operator &(sf lhs, sf rhs){
-        sf piped = static_cast<sf>(static_cast<int>(lhs) & static_cast<int>(rhs));
-        return piped;
-    }
-    /** @example sf::allowasterk == prev_defined -> return true **/
-    inline friend bool operator==(sf lhs, sf rhs){
-        //Checks that the bit of lhs exists within rhs
-        return static_cast<int>(lhs) == static_cast<int>(lhs & rhs);
-    }
+
     //Pairs a specific word with flags. This way we can put into our
     //  statemachine and do easy clean comparisons.
     struct rulepair{
@@ -100,6 +72,7 @@ public:
     //return a 2d table with with requested fields
 //    vector<vector<string> >& select(vector<string>& fields);
     void run();
+    void display_history() const; //displays in terminal previous inputs
 private:
     //Our statemachine adjacency "matrix"
     /** @example __parsetree[static_cast<int>(mode)][__currentstate] **/
@@ -119,11 +92,11 @@ private:
 
 //trying out some inline functions. I don't think i like it though because
 //  it clogs the build time
-inline ostream& operator <<(ostream& outs, mmysql::mode rhs){
+inline ostream& operator <<(ostream& outs, mode rhs){
     outs << "mode::" << mmysql::get_mode_string(rhs);
     return outs;
 }
-inline ostream& operator <<(ostream& outs, mmysql::state rhs){
+inline ostream& operator <<(ostream& outs, state rhs){
     /** @todo **/
     outs << "state::" << static_cast<int>(rhs);
     return outs;

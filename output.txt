@@ -1,0 +1,999 @@
+fbytes: 24
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191, 253})])]-->[(fname: [(Bryan: {106, 168, 230})]-->[(Chris: {129, 191, 253}) (Joe: {57})]-->[(Sassan: {78}) (Stephen: {24})])]-->[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129, 191, 253}) (Stack: {106, 168, 230})]) (major: [(CS: {78, 106, 168, 230}) (Computer Science: {129, 191, 253})]-->[(Math: {57}) (Statistics: {24})])]
+[MMYSHUNTING] Starting parse_to_tree: age>15 or fname = Joe or (major = "Statistics" or major=CS)
+[MMYSHUNTING] COMP BLOCK: age, >, 15
+[MMYSHUNTING] BOOL BLOCK: >, or, None
+[MMYSHUNTING] COMP BLOCK: fname, =, Joe
+[MMYSHUNTING] BOOL BLOCK: or, or, None
+[MMYSHUNTING] Starting parse_to_tree: major = "Statistics" or major=CS
+[MMYSHUNTING] COMP BLOCK: major, =, Statistics
+[MMYSHUNTING] BOOL BLOCK: =, or, None
+[MMYSHUNTING] COMP BLOCK: major, =, CS
+[MMYSHUNTING] P BLOCK right root: or
+Using templated compare fields
+Using templated compare fields
+Using templated compare fields
+Using templated compare fields
+Using templated compare fields
+Cannot string to double (stod): Joe
+Using string compare_fields()
+Using string compare_fields()
+Using string compare_fields()
+Using string compare_fields()
+Using string compare_fields()
+Cannot string to double (stod): Statistics
+Using string compare_fields()
+Using string compare_fields()
+Using string compare_fields()
+Using string compare_fields()
+Cannot string to double (stod): CS
+Using string compare_fields()
+Using string compare_fields()
+Using string compare_fields()
+Using string compare_fields()
+                   [set<ul>: {78, 106, 168, 230}]
+         [or]
+                   [set<ul>: {24}]
+[or]
+                   [set<ul>: {57}]
+         [or]
+                   [set<ul>: {24, 78, 106, 129, 168, 191, 230, 253}]
+Fields: [(0: ) (1: )]
+temp fields: [(age: 2)]-->[(fname: 1)]-->[(lname: 0) (major: 3)]
+fbytes: 24
+[(sea: 0) (see: 0)]-->[(seems: 0) (seen: 0)]
+lower: out of bounds
+selectname,agefromstudentswherename=StephenHit endline
+insertintoemployeesvaluesHahaha,Hehehe,HohohoHit endline
+INITIALIZING MMYSQL(TM) DATABASE QUERY INTERPRETER...INITIALIZED!
+PREPARING INTERPRETER...
+~~~WELCOME TO MMYSQL(TM) DATABASE QUERY INTERPRETER~~~
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+Keys: 0
+>select age, name from test where age < 100
+nextblock: 1:age,:0
+Got here
+Now here
+Now here
+[]
+[(token::fieldname: {age})]
+End here
+nextblock: 1:name:0
+[(state::0: [rp:7|29|set<ul>: {}])]
+Got here
+Now here
+Now here
+[(token::fieldname: {age})]
+[(token::fieldname: {age, name})]
+End here
+nextblock: 1:from:7
+[(state::7: [rp:4|0|set<ul>: {from}]) (state::9: [rp:6|32|set<ul>: {where}])]
+Got here
+nextblock: 1:test:4
+[(state::4: [rp:9|6|set<ul>: {}]) (state::6: [rp:8|32|set<ul>: {}])]
+Got here
+Now here
+Now here
+[(token::fieldname: {age, name})]
+[(token::fieldname: {age, name}) (token::tablename: {test})]
+End here
+nextblock: 1:where:9
+[(state::7: [rp:4|0|set<ul>: {from}]) (state::9: [rp:6|32|set<ul>: {where}])]
+Got here
+nextblock: 1:age:6
+[(state::4: [rp:9|6|set<ul>: {}]) (state::6: [rp:8|32|set<ul>: {}])]
+Got here
+Now here
+Now here
+[(token::fieldname: {age, name}) (token::tablename: {test})]
+[(token::fieldname: {age, name})]-->[(token::tablename: {test}) (token::constraint: {age  < 100})]
+End here
+Final shunting queue: [(token::fieldname: {age, name})]-->[(token::tablename: {test}) (token::constraint: {age  < 100})]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[]
+[(0: )]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(0: lname)]
+[(0: lname) (1: )]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(0: lname) (1: fname)]
+[(1: fname) (2: )]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[INSERT]: Overburdened after inserting (major: [])
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(1: fname) (2: age)]
+[INSERT]: Overburdened after inserting (3: )
+[(2: age) (3: )]
+fbytes: 24
+[(0: lname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: []) (major: [])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(1: fname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(fname: [])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Crane: {24})]) (major: [])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(0: lname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Crane: {24})]) (major: [(Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(1: fname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(fname: [(Stephen: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(120: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Blow: {57}) (Crane: {24})]) (major: [(Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(0: lname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Blow: {57}) (Crane: {24})]) (major: [(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(1: fname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(fname: [(Joe: {57}) (Stephen: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(120: {24}) (15: {57})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57}) (Crane: {24})]) (major: [(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(0: lname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57}) (Crane: {24})]) (major: [(CS: {78})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[INSERT]: Overburdened after inserting (Stack: {})
+[(1: fname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(fname: [(Joe: {57})]-->[(Sassan: {78}) (Stephen: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24}) (15: {57})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[INSERT]: Overburdened after inserting (20: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24}) (Stack: {106})]) (major: [(CS: {78})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(0: lname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24}) (Stack: {106})]) (major: [(CS: {78, 106})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[INSERT]: Overburdened after inserting (Grey: {})
+[(1: fname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(fname: [(Bryan: {106}) (Joe: {57})]-->[(Sassan: {78}) (Stephen: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[INSERT]: Overburdened after inserting (Chris: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57}) (20: {106})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[INSERT]: Overburdened after inserting (20000: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129}) (Stack: {106})]) (major: [(CS: {78, 106})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(0: lname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129}) (Stack: {106})]) (major: [(CS: {78, 106}) (Computer Science: {129})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(1: fname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(fname: [(Bryan: {106})]-->[(Chris: {129}) (Joe: {57})]-->[(Sassan: {78}) (Stephen: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106}) (20000: {129})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129}) (Stack: {106, 168})]) (major: [(CS: {78, 106}) (Computer Science: {129})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(0: lname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129}) (Stack: {106, 168})]) (major: [(CS: {78, 106, 168}) (Computer Science: {129})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(1: fname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(fname: [(Bryan: {106, 168})]-->[(Chris: {129}) (Joe: {57})]-->[(Sassan: {78}) (Stephen: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168}) (20000: {129})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129, 191}) (Stack: {106, 168})]) (major: [(CS: {78, 106, 168}) (Computer Science: {129})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(0: lname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129, 191}) (Stack: {106, 168})]) (major: [(CS: {78, 106, 168}) (Computer Science: {129, 191})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(1: fname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(fname: [(Bryan: {106, 168})]-->[(Chris: {129, 191}) (Joe: {57})]-->[(Sassan: {78}) (Stephen: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168}) (20000: {129, 191})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129, 191}) (Stack: {106, 168, 230})]) (major: [(CS: {78, 106, 168}) (Computer Science: {129, 191})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(0: lname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129, 191}) (Stack: {106, 168, 230})]) (major: [(CS: {78, 106, 168, 230}) (Computer Science: {129, 191})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(1: fname)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(fname: [(Bryan: {106, 168, 230})]-->[(Chris: {129, 191}) (Joe: {57})]-->[(Sassan: {78}) (Stephen: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[(2: age) (3: major)]
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129, 191, 253}) (Stack: {106, 168, 230})]) (major: [(CS: {78, 106, 168, 230}) (Computer Science: {129, 191})]-->[(Math: {57}) (Statistics: {24})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[MMYSHUNTING] Starting parse_to_tree: age  < 100
+[MMYSHUNTING] COMP BLOCK: age, <, 100
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191, 253})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[BPT].it begin()
+[BPT].it begin done
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191, 253})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+Using templated compare fields
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191, 253})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+Using templated compare fields
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191, 253})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+Using templated compare fields
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191, 253})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+Using templated compare fields
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191, 253})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+Using templated compare fields
+[BPT] copy operator
+[BPT].it begin()
+[BPT].it begin(): head empty (NOBIGGY)
+[BPT] copy operator DONE
+[(age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191, 253})])]
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+[set<ul>: {24, 78, 129, 191, 253}]
+[BPT].it begin()
+[BPT].it begin done
+[]
+[(lname: 0)]
+[(lname: 0)]
+[(fname: 0) (lname: 0)]
+[(fname: 1) (lname: 0)]
+[(age: 0)]
+[(fname: 1) (lname: 0)]
+[INSERT]: Overburdened after inserting (major: 0)
+[(lname: 0) (major: 0)]
+[(age: 2)]
+[(age: 2)]
+[(lname: 0) (major: 3)]
+Fields: [(2: )]
+temp fields: [(age: 2)]-->[(fname: 1)]-->[(lname: 0) (major: 3)]
+fbytes: 24
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+[(2: )]
+-----------------Deleting (2: )
+-----------------Deleting (fname: 1)
+-----------------Deleting (age: 2)
+-----------------Deleting (fname: 1)
+-----------------Deleting (lname: 0)
+-----------------Deleting (token::tablename: {test})
+-----------------Deleting (token::fieldname: {age, name})
+-----------------Deleting (token::tablename: {test})
+-----------------Deleting (token::none: {})
+>exit
+[(exit: mode::exit) (history: mode::history)]
+[BPT].it begin()
+[BPT].it begin done
+-----------------Deleting (1: fname)
+-----------------Deleting (0: lname)
+-----------------Deleting (1: fname)
+-----------------Deleting (2: age)
+-----------------Deleting (fname: [])
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191, 253})])
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (15: {57})
+-----------------Deleting (120: {24})
+-----------------Deleting (100: {78})
+-----------------Deleting (120: {24})
+-----------------Deleting (20: {106})
+-----------------Deleting (15: {57})
+-----------------Deleting (20: {106, 168, 230})
+-----------------Deleting (: {})
+-----------------Deleting (fname: [(Bryan: {106, 168, 230})]-->[(Chris: {129, 191, 253}) (Joe: {57})]-->[(Sassan: {78}) (Stephen: {24})])
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (Chris: {})
+-----------------Deleting (Bryan: {106, 168, 230})
+-----------------Deleting (Chris: {129, 191, 253})
+-----------------Deleting (Sassan: {78})
+-----------------Deleting (: {})
+-----------------Deleting (lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129, 191, 253}) (Stack: {106, 168, 230})])
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (Math: {57})
+-----------------Deleting (CS: {78, 106, 168, 230})
+-----------------Deleting (Math: {57})
+-----------------Deleting (: {})
+-----------------Deleting (Crane: {24})
+-----------------Deleting (Blow: {57})
+-----------------Deleting (Barkeshli: {78})
+-----------------Deleting (Blow: {57})
+-----------------Deleting (Grey: {})
+-----------------Deleting (Crane: {24})
+-----------------Deleting (Grey: {129, 191, 253})
+-----------------Deleting (: {})
+-----------------Deleting (test: 0x29bd1c0)
+-----------------Deleting (insert: mode::insert)
+-----------------Deleting (exit: mode::exit)
+-----------------Deleting (create: mode::create)
+-----------------Deleting (exit: mode::exit)
+-----------------Deleting (select: mode::select)
+-----------------Deleting (insert: mode::insert)
+-----------------Deleting (select: mode::select)
+-----------------Deleting (state::0: [rp:0|0|set<ul>: {}])
+-----------------Deleting (state::4: [rp:0|0|set<ul>: {}])
+-----------------Deleting (state::0: [rp:7|29|set<ul>: {}])
+-----------------Deleting (state::4: [rp:9|6|set<ul>: {}])
+-----------------Deleting (state::7: [rp:4|0|set<ul>: {from}])
+-----------------Deleting (state::1: [rp:9|4|set<ul>: {}])
+-----------------Deleting (state::0: [rp:1|0|set<ul>: {table}])
+-----------------Deleting (state::1: [rp:9|4|set<ul>: {}])
+-----------------Deleting (state::2: [rp:7|13|set<ul>: {}])
+-----------------Deleting (state::3: [rp:9|4|set<ul>: {}])
+-----------------Deleting (state::0: [rp:3|0|set<ul>: {into}])
+-----------------Deleting (state::3: [rp:9|4|set<ul>: {}])
+-----------------Deleting (state::5: [rp:10|13|set<ul>: {}])
+-----------------Deleting (state::0: [rp:0|0|set<ul>: {}])
+-----------------Deleting (state::0: [rp:0|0|set<ul>: {}])
+-----------------Deleting (state::1: [rp:9|4|set<ul>: {}])
+-----------------Deleting (state::0: [rp:1|0|set<ul>: {table}])
+-----------------Deleting (state::1: [rp:9|4|set<ul>: {}])
+-----------------Deleting (state::2: [rp:7|13|set<ul>: {}])
+-----------------Deleting (seems: 0)
+-----------------Deleting (sea: 0)
+-----------------Deleting (seems: 0)
+-----------------Deleting (1: fname)
+-----------------Deleting (0: lname)
+-----------------Deleting (1: fname)
+-----------------Deleting (2: age)
+-----------------Deleting (fname: [])
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (age: [(100: {78})]-->[(120: {24})]-->[(15: {57})]-->[(20: {106, 168, 230}) (20000: {129, 191, 253})])
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (15: {57})
+-----------------Deleting (120: {24})
+-----------------Deleting (100: {78})
+-----------------Deleting (120: {24})
+-----------------Deleting (20: {106})
+-----------------Deleting (15: {57})
+-----------------Deleting (20: {106, 168, 230})
+-----------------Deleting (: {})
+-----------------Deleting (fname: [(Bryan: {106, 168, 230})]-->[(Chris: {129, 191, 253}) (Joe: {57})]-->[(Sassan: {78}) (Stephen: {24})])
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (Chris: {})
+-----------------Deleting (Bryan: {106, 168, 230})
+-----------------Deleting (Chris: {129, 191, 253})
+-----------------Deleting (Sassan: {78})
+-----------------Deleting (: {})
+-----------------Deleting (lname: [(Barkeshli: {78})]-->[(Blow: {57})]-->[(Crane: {24})]-->[(Grey: {129, 191, 253}) (Stack: {106, 168, 230})])
+-----------------Deleting (: {})
+-----------------Deleting (: {})
+-----------------Deleting (Math: {57})
+-----------------Deleting (CS: {78, 106, 168, 230})
+-----------------Deleting (Math: {57})
+-----------------Deleting (: {})
+-----------------Deleting (Crane: {24})
+-----------------Deleting (Blow: {57})
+-----------------Deleting (Barkeshli: {78})
+-----------------Deleting (Blow: {57})
+-----------------Deleting (Grey: {})
+-----------------Deleting (Crane: {24})
+-----------------Deleting (Grey: {129, 191, 253})
+-----------------Deleting (: {})
+Press <RETURN> to close this window...

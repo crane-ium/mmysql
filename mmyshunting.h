@@ -63,6 +63,7 @@ string mmytrim(const string& s, size_t left, size_t right);
 //Compare two variables based on a given comparitor
 template<class numbertype, class compareetype>
 bool compare_fields(const numbertype& left, const compareetype& right, const string& comparee){
+    if(DBG>=debugger::light) cout << "Using templated compare fields\n";
     if(comparee == "=" or comparee == "==")
         return left == static_cast<numbertype>(right);
     else if(comparee == ">")

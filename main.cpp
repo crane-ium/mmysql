@@ -36,10 +36,10 @@ int main(int argc, char *argv[])
     mmytable table("test");
     cout << table.__itables << endl;
 
-    vector<string> allowedfields{"lname", "fname", "Does not exist"};
+    vector<string> allowedfields{"age", "lname", "fname", "Does not exist"};
 
     string s = "age>15 or fname = Joe or (major = \"Statistics\" or major=CS)";
-
+    s = "age > 10 or age < 10";
     fstream resultsfile("resultsfile.bin", ios::binary | ios::out | ios::ate);
     table.select(resultsfile, s, allowedfields);
     resultsfile.close();
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
             cout <<"Hit endline\n";
     }
 
-    mmysql sql;
+//    mmysql sql;
 
     //I THINK I AM GONNA GET RID OF THIS WHOLE CODE
 //    mmystate<> sm;

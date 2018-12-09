@@ -31,6 +31,7 @@ HEADERS += \
     sethelper.h \
     parse_tree_functions.h \
     mmystate.h \
+    mmyenums.h \
 
 
 
@@ -52,4 +53,5 @@ DISTFILES += \
     ../test.bin \
     test.bin \
     resultsfile.bin \
-    work_report.txt
+    work_report.txt \
+    returnfile.bin

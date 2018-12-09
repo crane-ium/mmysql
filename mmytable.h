@@ -262,7 +262,9 @@ public:
                const char delimiter='|');
     //Turns a line read from file into a vector of strings
     vector<string> vector_parse(const string& fileline,
-                                const simple_map<mmyint, string> &fieldset=simple_map<mmyint, string>());
+//                                const vector<mmyint> &ordering,
+                                const vector<mmyint> &ordering
+                                    =vector<mmyint>());
     bool read_file();
 
     //Selection
@@ -293,7 +295,6 @@ public:
     char __delimiter;
 
     record rec; //My record
-//    void add_field(const string& strs, ...); //REMOVED FEATURE
 };
 //HELPER FUNCTIONS
 namespace mmyhelper{
