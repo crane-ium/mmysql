@@ -159,7 +159,7 @@ void mmytable::select(fstream& filestream,
 
 //    constraint_processor.print();
     set<mmyint> idnums = constraint_processor.get_ids(__itables);
-//    constraint_processor.print();
+    constraint_processor.print();
 
     //if the vector fields is empty, then return all fields
     if(fields.empty()){
@@ -175,7 +175,6 @@ void mmytable::select(fstream& filestream,
         mmyhelper::stream_vecstring(filestream, fieldnames);
         for(auto it = idnums.begin(); it != idnums.end(); it++){
             vector<string> v = vector_parse(rec.get_line((*it)));
-//            filestream << v << endl;
             mmyhelper::stream_vecstring(filestream, v, true);
         }
     }else{
@@ -192,8 +191,12 @@ void mmytable::select(fstream& filestream,
         for(auto it=fields.begin();it!=fields.end();it++){
             if(temp_field_ids.exists(*it))
                 field_set.insert(temp_field_ids[*it]);
-            else //Remove invalid fields from our constraints?
+            else{
+                //Remove invalid fields from our constraints?
                 fields.erase(it);
+                it--; //Erase it, so we must backtrack one so we can
+                //do it++ in the for loop and not break code
+            }
         }
         filestream << DELIMITER; //start the file with the delimiter
         mmyhelper::stream_vecstring(filestream, fields); //write our fields to file

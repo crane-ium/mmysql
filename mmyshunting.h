@@ -10,6 +10,7 @@
 #include "parse_tree.h"
 #include "../bplustree_mmap/multimap.h"
 #include "../bplustree_mmap/map.h"
+#include "parse_tree_functions.h"
 
 //sorted by precedence, from lowest to highest
 enum class debugger{none, light, medium, heavy};

@@ -14,6 +14,9 @@ SOURCES += \
     mmyshunting.cpp \
     parse_tree.cpp \
     sethelper.cpp \
+    parse_tree_functions.cpp \
+    mmystate.cpp \
+
 
 
 HEADERS += \
@@ -26,6 +29,10 @@ HEADERS += \
     mmyshunting.h \
     parse_tree.h \
     sethelper.h \
+    parse_tree_functions.h \
+    mmystate.h \
+
+
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../state_machine/release/ -lstate_machine

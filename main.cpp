@@ -1,7 +1,10 @@
 //MultiMap SQL (MMySQL)
 #include <iostream>
+#include <sstream>
 //#include "../bplustree_mmap/multimap.h"
 #include "mmytable.h"
+#include "mmysql.h"
+#include "mmystate.h"
 //#include "../state_machine/ftokenizer.h"
 #include "../state_machine/ftokenizer.h"
 
@@ -12,6 +15,7 @@ using namespace std;
 //using Token = sm::SToken;
 using iter = typename multimap<string, long>::Iterator;
 void field_test1();
+void various_test1();
 multimap<string, long> get_word_indices(const string& file_name);
 
 int main(int argc, char *argv[])
@@ -38,23 +42,55 @@ int main(int argc, char *argv[])
 
     fstream resultsfile("resultsfile.bin", ios::binary | ios::out | ios::ate);
     table.select(resultsfile, s, allowedfields);
+    resultsfile.close();
 
-    set<unsigned long> s1{1, 2, 3, 4};
-    set<unsigned long> s2{3, 4, 5, 6};
-    set<unsigned long> result;
-    result = s1+s2;
-    cout << result << endl;
-    result = s1*s2;
-    cout << result << endl;
-    result = s1^s2;
-    cout << result << endl;
+//    parse_tree<int> parse_tree_test;
+//    cin >> parse_tree_test;
 
-    simple_map<string, long> lexo;
+    simple_map<string, int> foo;
+    foo["seen"];
+    foo["see"];
+    foo["seems"];
+    foo["sea"];
+    cout << foo << endl;
+    auto it = foo.lower_bound("s");
+    cout << "lower: ";
+    cout << (it!=foo.end() ? (*it).key : "out of bounds") << endl;
 
-    simple_map<string, string> nondefault(false);
-    nondefault.insert("one","ONE!");
-    cout << nondefault["one"] << endl;
-//    cout << nondefault["two"] << endl;
+    string temp;
+    string start = "select name, age from students where name=Stephen \n"
+            "insert into employees values Hahaha, Hehehe, Hohoho\n";
+    stringstream tempss;
+//    istream tempis;
+    tempss << start;
+//    tempis << start;
+    char* tempptr;
+    while(tempss >> temp){
+        cout << temp;
+        while(tempss.peek()==' ')
+            tempss.seekg(tempss.tellg()+1);
+        if(tempss.peek()=='\n')
+            cout <<"Hit endline\n";
+    }
+
+    mmysql sql;
+
+    //I THINK I AM GONNA GET RID OF THIS WHOLE CODE
+//    mmystate<> sm;
+//    sm.add_states(flagstate::none, flagstate::alphanumeric, mmy::ALPHANUMERICS);
+//    sm.add_states(flagstate::none, flagstate::comma, mmy::COMMA);
+//    sm.add_states(flagstate::none, flagstate::quote, mmy::QUOTE);
+//    sm.add_states(flagstate::quote, flagstate::inquote, mmy::NOTQUOTE);
+//    sm.add_states(flagstate::inquote, flagstate::inquote, mmy::NOTQUOTE);
+//    sm.add_states(flagstate::inquote, flagstate::endquote, mmy::QUOTE);
+//    sm.add_states(flagstate::inquote, flagstate::endquote, mmy::QUOTE);
+
+//    sm.__parsemap.print();
+//    string stest = "select name, age from people";
+//    vector<string> parsedstring = sm.parse_stream(stest);
+    //-----------------------------------------------------------------
+
+//    cout << parsedstring << endl;
 
 //    string s = "(last = \"Van Gogh\" or last = Jackson and salary >= 165000) or (andandor = 5)";
 
@@ -149,4 +185,23 @@ void field_test1()
 //    test.__itables.print();
 
 //    return 0;
+}
+void various_test1(){
+
+    set<unsigned long> s1{1, 2, 3, 4};
+    set<unsigned long> s2{3, 4, 5, 6};
+    set<unsigned long> result;
+    result = s1+s2;
+    cout << result << endl;
+    result = s1*s2;
+    cout << result << endl;
+    result = s1^s2;
+    cout << result << endl;
+
+    simple_map<string, long> lexo;
+
+    simple_map<string, string> nondefault(false);
+    nondefault.insert("one","ONE!");
+    cout << nondefault["one"] << endl;
+//    cout << nondefault["two"] << endl;
 }
