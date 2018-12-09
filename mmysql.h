@@ -18,16 +18,24 @@ class mmysql
 {
 public:
     //DECLARE OUR MODES/STATES FOR OUR STATEMACHINE
-    enum class token{none=0, modename, fieldname, tablename, constraint};
-    enum class mode {start=0, select=1, create=2,
+    enum class token{none, modename, fieldname, tablename, constraint};
+    enum class mode {start=0, select=1, create=2, make=6,
                      insert=3, exit=4, history=5, DEFAULT=mode::start};
-    mode modelist[6] = {mode::start, mode::select, mode::create,
+    //This array is used for a ranged for loop
+    mode modelist[7] = {mode::start, mode::select, mode::create, mode::make,
                        mode::insert, mode::exit, mode::history};
+    enum class state{start, tablekey, fieldskey, intokey, fromkey,
+                     valueskey, wherekey, getfields, getconstraint,
+                     gettable, getvalues, DEFAULT=state::start};
     //I am going ot use stateflags like integer representations
     //  of bits, so I can do clean bitwise operations
     /** @def sf = stateflag **/
     enum class sf{none=0x00, allowcomma=0x01, allowstring=0x02,
-                  allowquotes=0x04, repeatable=0x08, DEFAULT=sf::none};
+                  allowquotes=0x04, repeatable=0x08, allowasterisk=0x10,
+                  getall=0x20, DEFAULT=sf::none};
+    sf sflist[7] = {sf::none, sf::allowasterisk, sf::allowcomma,
+                    sf::allowstring, sf::allowquotes,
+                    sf::repeatable, sf::getall};
     //Give it a bitwise pipe for combining flags
     inline friend sf operator |(sf lhs, sf rhs){
         sf piped = static_cast<sf>(static_cast<int>(lhs) | static_cast<int>(rhs));
@@ -37,13 +45,32 @@ public:
         sf piped = static_cast<sf>(static_cast<int>(lhs) & static_cast<int>(rhs));
         return piped;
     }
+    /** @example sf::allowasterk == prev_defined -> return true **/
+    inline friend bool operator==(sf lhs, sf rhs){
+        //Checks that the bit of lhs exists within rhs
+        return static_cast<int>(lhs) == static_cast<int>(lhs & rhs);
+    }
     //Pairs a specific word with flags. This way we can put into our
     //  statemachine and do easy clean comparisons.
     struct rulepair{
-        rulepair(sf flags=sf::none, string specifier="")
-            :_flags(flags), _specifier(specifier){}
-        string _specifier;
-        sf _flags;
+        rulepair(state next=state::DEFAULT, token type=token::none,
+                 sf flags=sf::none, set<string> specifier=set<string>(),
+                 bool valid=false)
+            :nextstate(next), flags(flags),
+              specifier(specifier), type(type), valid(valid){}
+        state nextstate;
+        set<string> specifier;
+        sf flags;
+        token type;
+        bool valid;
+        //goes to next state unless the repeatable requirements are fulfilled
+    };
+    //Pairs a string with a token
+    struct mmytoken{
+        mmytoken(const string& value, token type=token::none)
+            :value(value), type(type){}
+        string value;
+        token type;
     };
     static inline string get_mode_string(mode m){
         switch(m){
@@ -53,6 +80,8 @@ public:
             return "select";
         case mode::create:
             return "create";
+        case mode::make:
+            return "make";
         case mode::insert:
             return "insert";
         case mode::exit:
@@ -63,7 +92,6 @@ public:
             return "none";
         }
     }
-    enum class state{start, DEFAULT=state::start};
     //CTOR
     mmysql();
     ~mmysql(); //deletes mmytable pointers in our map
@@ -92,19 +120,30 @@ private:
 //trying out some inline functions. I don't think i like it though because
 //  it clogs the build time
 inline ostream& operator <<(ostream& outs, mmysql::mode rhs){
-    cout << "mode::" << mmysql::get_mode_string(rhs);
+    outs << "mode::" << mmysql::get_mode_string(rhs);
     return outs;
 }
 inline ostream& operator <<(ostream& outs, mmysql::state rhs){
     /** @todo **/
-    cout << "state::" << static_cast<int>(rhs);
+    outs << "state::" << static_cast<int>(rhs);
     return outs;
 }
 inline ostream& operator <<(ostream& outs, const mmysql::rulepair& rhs){
-    cout << "[rp:"<<static_cast<int>(rhs._flags)<<"|"<<rhs._specifier<<"]";
+    outs << "[rp:"<<static_cast<int>(rhs.nextstate)<<"|"
+         <<static_cast<int>(rhs.flags)<<"|"<<rhs.specifier<<"]";
     return outs;
 }
-
+inline ostream& operator << (ostream& outs, const mmysql::mmytoken& rhs){
+    outs << static_cast<int>(rhs.type) << ":" << rhs.value;
+}
+inline ostream& operator << (ostream& outs, const vector<mmysql::mmytoken>& rhs){
+    for(auto it=rhs.begin(); it!= rhs.end(); it++){
+        if(it !=rhs.begin())
+            outs << ", ";
+        outs << (*it);
+    }
+    return outs;
+}
 class mmysql_user{
 public:
     mmysql_user();

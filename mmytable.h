@@ -18,7 +18,7 @@ extern string RETURNFILENAME;
 typedef unsigned long mmyint;
 
 enum class bugflag {none, light, medium, heavy};
-static const bugflag debug = bugflag::none;
+static bugflag debug = bugflag::none;
 
 /**
  * @brief Initializes a table-file if dne
