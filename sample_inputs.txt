@@ -1,0 +1,6 @@
+select age, fname from test where (age>10  and lname < "z" and fname > a) or major==CS or major=="Computer Science"
+select age, fname, "lname" from test where age<=100 or lname=Crane xor age>100
+select fname, lname from test where age=120
+select fname, lname from test where age!=120 and major=CS or major=="Computer Science"
+select fname, lname from test where age!=120 and major=CS xor major=="Computer Science" xor fname==Bryan or fname==bryan
+
