@@ -105,6 +105,7 @@ public:
         //First we do an infix traversal to find and evaluate at
         //each tokentype::comparitor node on the tree, replacing that
         //node with a set of id#s that pass the comparison
+        assert(__root);
         __root->generate_ids(map);
         set<unsigned long> result = __root->get_ids();
         return result;

@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <iomanip>
 #include "../bplustree_mmap/multimap.h"
 #include "../bplustree_mmap/map.h"
 #include "mmyshunting.h"
@@ -146,14 +147,6 @@ struct record{
         if(open() && _lastrecordflag){
             _lastrecord = "";
             if(debug==bugflag::medium) cout << "Fields: " << _fields << endl;
-//            for(size_t i = 0; i < _fields; i++){
-//                //for each field, get those
-//                /** @todo optimize here **/
-//                string temp;
-//                getline(_ifstream, temp, _delimiter); //binary file naturally no '\0'
-
-//                _lastrecord += temp;
-//            }
 
             getline(_ifstream, _lastrecord);
             if(!_ifstream){
@@ -172,6 +165,33 @@ struct record{
 //            char* line = _fstream.getline()
         return _lastrecord; //failed to ge tnext;
     }
+    //Using record.next(), parse the given string and turn it into vector
+    vector<string> next_vector(){
+        next();
+        //Calling next() gave us an updated _lastrecord
+        //lit: left_it
+        auto lit = _lastrecord.begin();
+        size_t count = 0;
+        size_t length = 0; //Let's keep track of length
+
+        vector<string> result;
+        for(auto it=_lastrecord.begin(); it!=_lastrecord.end();it++){
+            length++;
+            if((*it) == DELIMITER){
+                if(count>0){
+                    result.push_back(string(lit, it));
+                    if(length-1 > _longest[count-1])
+                        _longest[count-1] = length-1;
+                }
+                lit = it+1;
+                count++;
+                length=0;
+            }
+        }
+        return result;
+    }
+    //Returns the length of the longest string in the table
+    vector<size_t> longest() const{return _longest;}
     bool more(){
         next();
         if(_lastrecord != "\0") //verify that you're not allowing an ungrabble data
@@ -204,8 +224,9 @@ struct record{
             _fieldbytes = initstream.tellg();
             _init = true;
             initstream.close();
+            _longest.resize(_fields);
         }else{
-            if(debug == bugflag::none) cout << "[FAIL] record.init cannot open\n";
+            if(debug == bugflag::none) cout << "[FAIL] record.init cannot open " << _file+".bin" << endl;
         }
     }
     bool open(){
@@ -237,6 +258,7 @@ struct record{
     char _delimiter; //delimiter that seperates fields
     string _lastrecord;
     bool _lastrecordflag; //checks if it's been retrieved yet or not
+    vector<size_t> _longest; //keep track of the longest word per field there is
 };
 
 /**
@@ -260,6 +282,7 @@ public:
                const char delimiter='|');
     //Turns a line read from file into a vector of strings
     vector<string> vector_parse(const string& fileline,
+                                bool wildcard=false, //flag for wildcard call
 //                                const vector<mmyint> &ordering,
                                 const vector<mmyint> &ordering
                                     =vector<mmyint>());
@@ -276,7 +299,7 @@ public:
                                          const string& op,
                                          const string& comp);
     void set_delimiter(const char new_delimiter){DELIMITER=new_delimiter;}
-
+    inline char get_delimiter() const{return DELIMITER;}
 //    void create(const string& table_name, const string &strs, ...); //REMOVED FEATURE
 private:
     //__itables[fieldname][targetname]
@@ -299,5 +322,10 @@ namespace mmyhelper{
     void stream_vecstring(fstream &filestream,
                           const vector<string>& vstr,
                           bool write_idflag=false);
+    //Print a table given a 2d vector
+    void print_table(const vector<vector<string> >& table,
+                     const string& tablename,
+                     const vector<size_t> &column_width);
 }
+
 #endif // MMYTABLE_H

@@ -104,6 +104,7 @@ void mmytable::parse(const string &fileline, const char delimiter){
 
 //return a vector of strings, parsed from a fileline syntax, and based on set
 vector<string> mmytable::vector_parse(const string& fileline,
+                                      bool wildcard,
 //                                      const vector<mmyint>& ordering,
                             const vector<mmyint>& ordering){
     //Again, we assume it holds the proper format of:
@@ -117,6 +118,9 @@ vector<string> mmytable::vector_parse(const string& fileline,
     string subs; //temp substring between delimiters
     vector<string> results;
     simple_map<mmyint, string> fieldvalues;
+
+    if(ordering.empty() && !wildcard)
+        return results;
 
     for(mmyint i = 0; i < length; i++){
         //fieldset starts at 0, and links with field 0 (not id#)
@@ -173,13 +177,9 @@ void mmytable::select(fstream& filestream,
     for(auto it=__fields.begin();it != __fields.end(); it++){
         temp_field_ids[(*it).val] = (*it).key;
     }
-    vector<mmyint> fieldorder; //Give it to reader so you put fields in order
-    for(auto it = fields.begin(); it != fields.end(); it++){
-        if(temp_field_ids.exists((*it)))
-            fieldorder.push_back(temp_field_ids[(*it)]);
-    }
 
     //if the vector fields is empty, then return all fields
+    //This is for wildcard (*) calls
     if(fields.empty()){
         //In this block:
         //  Create control vector for the fieldnames
@@ -191,8 +191,9 @@ void mmytable::select(fstream& filestream,
         filestream << DELIMITER; //start the file with the delimiter
         //Use helper function to insert vector of fieldnames into a fstream
         mmyhelper::stream_vecstring(filestream, fieldnames);
+        //Ordering for the vector_parser
         for(auto it = idnums.begin(); it != idnums.end(); it++){
-            vector<string> v = vector_parse(rec.get_line((*it)));
+            vector<string> v = vector_parse(rec.get_line((*it)),true);
             //rearrange the given vector to match the proper ordering
             mmyhelper::stream_vecstring(filestream, v, true);
         }
@@ -202,6 +203,11 @@ void mmytable::select(fstream& filestream,
         //Build a quickmap so we can get our fields and put them inorder
         simple_map<mmyint, string> field_set;
 
+        vector<mmyint> fieldorder; //Give it to reader so you put fields in order
+        for(auto it = fields.begin(); it != fields.end(); it++){
+            if(temp_field_ids.exists((*it)))
+                fieldorder.push_back(temp_field_ids[(*it)]);
+        }
         //Now that we have a clean temporary memoization, let's
         //  build a quick vector of fields
         for(auto it=fields.begin();it!=fields.end();it++){
@@ -221,8 +227,13 @@ void mmytable::select(fstream& filestream,
              << "temp fields: " << temp_field_ids << endl
              << "fieldorder: " << fieldorder << endl;
         for(auto it=idnums.begin(); it != idnums.end(); it++){
-            vector<string> v = vector_parse(rec.get_line((*it)), fieldorder);
-            assert(fieldorder.size() == v.size());
+            vector<string> v = vector_parse(rec.get_line((*it)),
+                                            false, fieldorder);
+//            if(fieldorder.size() != v.size())
+//                cout << "fieldorder.size() != v.size(): " << endl
+//                     << "fieldorder: " << fieldorder << endl
+//                     << "v: " << v << endl;
+//            assert(fieldorder.size() == v.size());
             mmyhelper::stream_vecstring(filestream, v, true);
         }
     }
@@ -253,6 +264,38 @@ void mmyhelper::stream_vecstring(fstream& filestream,
         filestream << *vit << DELIMITER;
     }
     filestream << '\n';
+}
+
+void mmyhelper::print_table(const vector<vector<string> >& table,
+                            const string& tablename,
+                            const vector<size_t>& column_width){
+    /** @example
+     * Table name: tablename, Records: 2
+     * record no.   lname       fname       age
+     *      0       Crane       Stephen     27
+     *      1       Barkeshli   Sassan      100
+     * **/
+    cout << "Table name: " << tablename
+         << ", Records: " << table.size()-1;
+    size_t record_count = 0, count=0;
+    cout << right;
+    for(auto i = table.begin(); i != table.end(); i++){
+        cout << endl;
+        if(i==table.begin()){
+            cout << setw(8) << "record";
+        }else{
+            cout << setw(8) << record_count;
+            record_count++;
+        }
+        count=0;
+        for(auto j = i->begin(); j != i->end(); j++){
+            cout << setw(column_width[count]+2) << (*j);
+            count++;
+        }
+        if(i==table.begin())
+            cout << endl;
+    }
+    cout << endl;
 }
 
 //Get a vector of all id#s that pass the comparison

@@ -4,6 +4,12 @@ debugger DBG = debugger::none;
 
 mmynode* parse_to_tree(const string& s){
     mmynode* root = nullptr;
+    //Empty string means no constraints -> return all id#s
+    if(s==""){
+        root = new mmynode("");
+        root->ttype = tokentype::ids;
+        return root;
+    }
     mmynode* child = nullptr;
     //boolean operator indeces, and comparison operator indeces
     size_t length = s.length();
@@ -145,15 +151,6 @@ mmynode* parse_to_tree(const string& s){
                 root = tempnode;
                 root->insert_boolean(child);
             }
-//            if(!root){//nullptr
-//                root = new mmynode(temp, child);
-//                root->ttype = tokentype::boolean;
-//                child = nullptr;
-//            }else{
-//                mmynode* tempnode = new mmynode(temp, root);
-//                root = tempnode;
-//                root->ttype = tokentype::boolean;
-//            }
             b_left = i+1;
             mystate = state::getnextblock;
             if(DBG>=debugger::light)
@@ -198,6 +195,14 @@ void mmynode::generate_ids(simple_map<string, multimap<string, unsigned long> >&
     //age            >         10        and           ...
     //fieldname  comparitor comparee   boolean
 
+    //Case that we have no constraints -> give all data entry id#s
+    if(ttype == tokentype::ids){
+        auto it = map.begin();
+        for(auto nit = (*it).val.begin(); nit != (*it).val.end();nit++){
+            idnums += (*nit).vec;
+        }
+        return;
+    }
     if(ttype != tokentype::comparitor){
         if(left)
             left->generate_ids(map);

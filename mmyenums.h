@@ -4,7 +4,7 @@
 #include <iostream>
 
 //DECLARE OUR MODES/STATES FOR OUR STATEMACHINE
-enum class token{none, modename, fieldname, tablename, constraint};
+enum class token{none, modename, fieldname, tablename, constraint, wildcard};
 enum class mode {start=0, select=1, create=2, make=6,
                  insert=3, exit=4, history=5, DEFAULT=mode::start};
 //This array is used for a ranged for loop

@@ -4,7 +4,7 @@
   */
 #include "mmysql.h"
 
-string DEFAULTRETURNFILE="returnfile.bin";
+string DEFAULTRETURNFILE="returnfile";
 
 //Default constructor for mmysql querying controls
 mmysql::mmysql(){
@@ -95,7 +95,6 @@ void mmysql::interpret(){
         //We defined our __parsetree. Now let's use it
         rules = __parsetree[static_cast<int>(__currentmode)][__currentstate];
         auto it = rules.specifier.find(nextblock);
-        cout << "Got here\n";
         //means it's only a syntax keyword
         if(!rules.specifier.empty()){
             if(it==rules.specifier.end()){ //verify if incorrect specifier
@@ -112,7 +111,6 @@ void mmysql::interpret(){
         bool asteriskflag = false; //ends ranged loop early
         repeatingflag = false; //does not go to nextstate yet
         size_t length = nextblock.size(); //hold so we don't repeat calculate
-        cout << "Now here\n";
         for(sf rule : sflist){
             switch(rule){
             case sf::allowasterisk:
@@ -167,11 +165,8 @@ void mmysql::interpret(){
         if(!repeatingflag)
             __currentstate = rules.nextstate;
 
-        cout << "Now here\n";
-        cout << shuntingqueue << endl;
         shuntingqueue[rules.type] += nextblock;
-        cout << shuntingqueue << endl;
-        cout << "End here\n";
+//        cout << shuntingqueue << endl;
     }
     if(!rules.valid){
         if(debug>= bugflag::light) cout << "[mmysql] Invalid rule\n";
@@ -199,9 +194,13 @@ void mmysql::interpret(){
             cout << "ERROR 355: TABLE FILE DOES NOT EXIST\n";
             return;
         }
-        mmytable* temp = new mmytable(temptablename);
-        __database.insert(temptablename, temp);
-        fstream selector(DEFAULTRETURNFILE, ios::binary|ios::out|ios::ate);
+        mmytable* temp;
+        if(!__database.exists(temptablename)){
+            temp= new mmytable(temptablename);
+            __database.insert(temptablename, temp);
+        }else
+            temp = __database[temptablename];
+        fstream selector(DEFAULTRETURNFILE+".bin", ios::binary|ios::out|ios::ate);
         auto get_string= [&](){
             if(shuntingqueue[token::constraint].empty())
                 return (string)"";
@@ -215,6 +214,20 @@ void mmysql::interpret(){
         if(debug>=bugflag::medium)
             cout << "fields: " << shuntingqueue[token::fieldname] << endl;
         /** @todo Get that file written up and read from it **/
+        //Now: Requested data written to file
+        //Let's simply display the data given back to us.
+        selector.close(); //close old stream
+        //Prepare to read using the record parsing
+        record reader(DEFAULTRETURNFILE, temp->get_delimiter());
+        vector<vector<string> > select_table;
+        select_table.push_back(reader.get_fieldnames());
+        while(reader.more()){
+            select_table.push_back(reader.next_vector());
+        }
+        vector<size_t> column_max = reader.longest();
+        mmyhelper::print_table(select_table,
+                               temptablename,
+                               column_max);
         break;
     }
     case mode::create:

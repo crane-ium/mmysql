@@ -27,14 +27,7 @@ int main(int argc, char *argv[])
     vector<string> data2{"Barkeshli", "Sassan", "100", "CS"};
     vector<string> data3{"Stack", "Bryan", "20", "CS"};
     vector<string> data4{"Grey", "Chris", "20000", "Computer Science"};
-//    writer w("test", fields);
-//    rec.set_file("test");
-//    rec.insert(data0);
-//    rec.insert(data1);
-//    rec.insert(data2);
-
     mmytable table("test");
-//    cout << table.__itables << endl;
 
 //    vector<string> allowedfields{"age", "lname", "fname", "Does not exist"};
 

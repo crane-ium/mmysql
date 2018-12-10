@@ -54,4 +54,5 @@ DISTFILES += \
     test.bin \
     resultsfile.bin \
     work_report.txt \
-    returnfile.bin
+    returnfile.bin \
+    sample_inputs.txt
