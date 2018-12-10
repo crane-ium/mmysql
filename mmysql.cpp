@@ -31,9 +31,9 @@ void mmysql::display_history() const{
     cout << "\n------ PAST HISTORY -------\n";
     size_t count = 0;
     for(auto it = __history.begin(); it != __history.end(); it++){
-        count++;
-        cout << "[" << setfill('0') << setw(3) << count << "]  "
+        cout << "[" /*<< setfill('0') << setw(3)*/ << count << "]  "
              << (*it) << endl;
+        count++;
     }
 }
 //Runs the line in our mmysql terminal, starting by getting the next line;
@@ -70,17 +70,17 @@ void mmysql::interpret(){
 
     //Immediately, let's check for simple inputs, such as
     //  history, or exit
-    /** @todo I don't like this. It defeats the purpose of
-     * all the work I've put towards my own data structure,
-     * but this temporarily works **/
-    if(commandmode=="history"){
-        display_history();
+    switch(__currentmode){
+    case mode::history:
         /** @todo Add functionality for more history commands
          * eg. history -5 (shows the last 5 history inputs
          * eg. history -r 5 (repeats last 5 inputs) **/
+        display_history();
         return;
-    }else if(commandmode=="exit"){
+    case mode::exit:
         return;
+    default:
+        break;
     }
 
     //PARSETREE MIRACLES HAPPEN HERE
@@ -88,8 +88,39 @@ void mmysql::interpret(){
     multimap<token, string> shuntingqueue; //infix style shunting : contradictory!
     bool repeatingflag=true;
     rulepair rules;
-    while(parsestream >> nextblock){
-        if(debug >= bugflag::medium)
+    size_t length=0;
+    auto get_next_block = [&](){
+        //check if valid based on quotation marks
+        while(isspace(parsestream.peek()))
+            parsestream.seekg(parsestream.tellg()+1);
+        if(parsestream.peek()=='\"'){
+            getline(parsestream,nextblock,'\"');
+            if(parsestream.peek()==','){
+                nextblock+=',';
+                parsestream.seekg(parsestream.tellg()+1);
+            }
+        }else
+            parsestream >> nextblock;
+        cout << "Nextblock: " << nextblock << endl;
+        length = nextblock.size();
+//        auto nextblockvalid = [&](){
+//            return ((nextblock[0]=='\"' && (nextblock[length-1]=='\"' || nextblock[length-1]==','))  || nextblock[0] !='\"');
+//        };
+//        parsestream >> nextblock;
+//        length = nextblock.size(); //hold so we don't repeat calculate
+
+//        if(!nextblockvalid()){
+//            getline(parsestream, temp, '\"');
+//            if(parsestream.peek()==','){
+//                temp+=',';
+//                parsestream.seekg(parsestream.tellg()+1);
+//            }
+//            nextblock = nextblock + " " +
+//        }
+    };
+    while(parsestream.tellg() != -1){
+        get_next_block();
+//        if(debug >= bugflag::medium)
             cout << "nextblock: " <<static_cast<int>(__currentmode) << ":"
                  << nextblock << ":" << static_cast<int>(__currentstate) << endl;
         //We defined our __parsetree. Now let's use it
@@ -110,7 +141,6 @@ void mmysql::interpret(){
         bool invalid = false; //ends parse
         bool asteriskflag = false; //ends ranged loop early
         repeatingflag = false; //does not go to nextstate yet
-        size_t length = nextblock.size(); //hold so we don't repeat calculate
         for(sf rule : sflist){
             switch(rule){
             case sf::allowasterisk:
@@ -125,9 +155,28 @@ void mmysql::interpret(){
                         reset();
                         return;
                     }
+                    /** @badcode @todo this is awful and why i should've just
+                     * done a safe statemachine... **/
+
+                    //Find commas that are not in quotes
+                    bool quotes=false; //count how deep into parentheses
+                    size_t comma_index = 0;
+                    auto it = nextblock.begin();
+                    for(;it!=nextblock.end();it++){
+                        if((*it)=='\"' && (*(it-1)) != '\\'){
+                            quotes ^= true;
+                        }
+                        if(!quotes && (*it) == ','){
+                            break;
+                        }
+                        comma_index++;
+                    }
+                    parsestream.seekg(parsestream.tellg()-(length-comma_index-1));
                     repeatingflag=true;
-                    nextblock = nextblock.substr(0, length-1);
-                    length-=1;
+                    nextblock = string(nextblock.begin(), it);
+                    cout << nextblock << endl;
+                    cout << "Next: " << (char)parsestream.peek() << ":" << parsestream.peek() << endl;
+                    length = nextblock.size();
                 }
                 continue;
             case sf::allowquotes:
@@ -187,6 +236,7 @@ void mmysql::interpret(){
     //If we have reached here, we are ready to turn the lines into
     //  commands an make tables/make changes
     switch(__currentmode){
+        //SELECTION
     case mode::select:{
         /** @todo Could make this more robust here, by cleaning up directory controls **/
         string temptablename = shuntingqueue[token::tablename][0];
@@ -201,19 +251,23 @@ void mmysql::interpret(){
         }else
             temp = __database[temptablename];
         fstream selector(DEFAULTRETURNFILE+".bin", ios::binary|ios::out|ios::ate);
+        if(!selector.is_open()){
+            cout << "[mmysql] Failed to open selector\n";
+            return;
+        }
+        //Returns the correct string for constraint
         auto get_string= [&](){
             if(shuntingqueue[token::constraint].empty())
                 return (string)"";
             else
                 return shuntingqueue[token::constraint][0];
         };
-        if(shuntingqueue[token::fieldname][0] == "*")
+        if(shuntingqueue[token::fieldname][0] == "*") //check wildcard value
             temp->select(selector, get_string());
         else
             temp->select(selector, get_string(), shuntingqueue[token::fieldname]);
         if(debug>=bugflag::medium)
             cout << "fields: " << shuntingqueue[token::fieldname] << endl;
-        /** @todo Get that file written up and read from it **/
         //Now: Requested data written to file
         //Let's simply display the data given back to us.
         selector.close(); //close old stream
@@ -230,23 +284,52 @@ void mmysql::interpret(){
                                column_max);
         break;
     }
+        //FORCEFUL CREATION
+    case mode::forcecreate:
+    case mode::forcemake:
+        //Like create, but forcefully overwrites the basefile
+        /** @todo AS OF NOW, to fit barkeshli's batch files,
+         * I would rather not utilize this **/
+        //CREATION
     case mode::create:
     case mode::make:{
         //Check if file exists first
         string temptablename = shuntingqueue[token::tablename][0];
-        if(file_exists(temptablename)){ //table already exists, exit.
-            cout << "ERROR 998: CANNOT CREATE: FILE ALREADY EXISTS\n";
-            break;
-        }
-        /** @todo Add create functions for mmytable **/
-        mmytable* temp = new mmytable(temptablename);
+//        if(file_exists(temptablename)){ //table already exists, exit.
+//            cout << "[ERROR 998] CANNOT CREATE: FILE ALREADY EXISTS\n";
+//            return;
+//        }
+        //Create a new table and fill it with our new fields
+        mmytable* temp = new mmytable;
+        temp->init(temptablename);
         __database.insert(temptablename, temp);
+        temp->field_add_all(shuntingqueue[token::fieldname]);
+        bool created = temp->create(true);
+        temp->read_file();
+        if(created)
+            cout << "\nMMYSQL: Successfully created table " << temptablename << endl;
+        else
+            cout << "\nMMYSQL: Failed to create table " << temptablename << endl;
         if(debug >= bugflag::medium)
             cout << "[mmysql] Creating " << temptablename << ". \n";
-        break;
+        return;
     }
+        //INSERTION
     case mode::insert:{
-
+        string temptablename = shuntingqueue[token::tablename][0];
+        if(!file_exists(temptablename)){
+            cout << "[ERROR 1234] CANNOT INSERT: FILE DOES NOT EXIST\n";
+            return;
+        }
+        mmytable* temp;
+        if(!__database.exists(temptablename)){
+            temp = new mmytable(temptablename);
+            __database.insert(temptablename, temp);
+        }else{
+            temp = __database[temptablename];
+        }
+        temp->insert(shuntingqueue[token::fieldname]);
+        cout << "\nMMYSQL: Successfully inserted\n";
         break;
     }
     case mode::start:
@@ -256,7 +339,8 @@ void mmysql::interpret(){
     }
 }
 void mmysql::display_terminal(){
-    cout << ">";
+    cout << "[" << linecount << "]>";
+    linecount++;
 }
 void mmysql::define_parsetree(){
     //Later, we do not want to access keys directly, we want to check if
@@ -296,6 +380,10 @@ void mmysql::define_parsetree(){
                      sf::allowquotes|sf::repeatable, set<string>(), true);
 
     intmode = static_cast<int>(mode::make); //synonymous with create
+    __parsetree[intmode] = __parsetree[static_cast<int>(mode::create)];
+    intmode = static_cast<int>(mode::forcecreate); //Force file overwrite
+    __parsetree[intmode] = __parsetree[static_cast<int>(mode::make)];
+    intmode = static_cast<int>(mode::forcemake); //synonymous with create
     __parsetree[intmode] = __parsetree[static_cast<int>(mode::create)];
 
     intmode = static_cast<int>(mode::insert);

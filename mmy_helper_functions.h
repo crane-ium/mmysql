@@ -22,6 +22,6 @@ std::string get_uppercase(std::string s);
 //turns the given string lowercase
 std::string& transform_uppercase(std::string& s);
 
-//
+
 
 #endif // MMY_HELPER_FUNCTIONS_H

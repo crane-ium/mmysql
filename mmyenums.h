@@ -6,10 +6,12 @@
 //DECLARE OUR MODES/STATES FOR OUR STATEMACHINE
 enum class token{none, modename, fieldname, tablename, constraint, wildcard};
 enum class mode {start=0, select=1, create=2, make=6,
-                 insert=3, exit=4, history=5, DEFAULT=mode::start};
+                 insert=3, exit=4, history=5, forcecreate=7, forcemake=8,
+                 batch=9, DEFAULT=mode::start};
 //This array is used for a ranged for loop
-static mode modelist[7] = {mode::start, mode::select, mode::create, mode::make,
-                   mode::insert, mode::exit, mode::history};
+static mode modelist[10] = {mode::start, mode::select, mode::create, mode::make,
+                            mode::insert, mode::exit, mode::history,
+                            mode::forcecreate, mode::forcemake, mode::batch};
 enum class state{start, tablekey, fieldskey, intokey, fromkey,
                  valueskey, wherekey, getfields, getconstraint,
                  gettable, getvalues, DEFAULT=state::start};

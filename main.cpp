@@ -40,6 +40,15 @@ int main(int argc, char *argv[])
 
      mmysql sql;
 
+//    s = "one, 12345, three";
+//    stringstream ss(s);
+//    string s2;
+//    ss >> s2 >> s2;
+//    ss.seekg(ss.tellg()-6);
+//    ss >> s2;
+//    cout << s2;
+//    cout << "ss data: " << ss.tellg() << endl;
+
 //    parse_tree<int> parse_tree_test;
 //    cin >> parse_tree_test;
 

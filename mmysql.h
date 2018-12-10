@@ -60,6 +60,12 @@ public:
             return "exit";
         case mode::history:
             return "history";
+        case mode::forcecreate:
+            return "forcecreate";
+        case mode::forcemake:
+            return "forcemake";
+        case mode::batch:
+            return "batch";
         default:
             return "none";
         }
@@ -87,6 +93,7 @@ private:
     vector<string> __history; //History of user's data
     mode __currentmode=mode::start;
     state __currentstate=state::start;
+    size_t linecount = 0;
     void display_terminal();
     void define_parsetree(); //define our parsetree aka statemachine
 };

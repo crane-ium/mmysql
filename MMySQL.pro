@@ -5,14 +5,9 @@ CONFIG -= qt
 
 SOURCES += \
         main.cpp \
-    sql_interface.cpp \
     mmysql.cpp \
     mmytable.cpp \
-    mmyrecord.cpp \
-    mmyset.cpp \
-    mmytable_functions.cpp \
     mmyshunting.cpp \
-    parse_tree.cpp \
     sethelper.cpp \
     parse_tree_functions.cpp \
     mmystate.cpp \
@@ -20,17 +15,12 @@ SOURCES += \
 
 
 HEADERS += \
-    sql_interface.h \
     mmysql.h \
     mmytable.h \
     mmyrecord.h \
-    mmyset.h \
-    mmytable_functions.h \
     mmyshunting.h \
-    parse_tree.h \
     sethelper.h \
     parse_tree_functions.h \
-    mmystate.h \
     mmyenums.h \
     mmy_helper_functions.h \
     mmy_constants.h \

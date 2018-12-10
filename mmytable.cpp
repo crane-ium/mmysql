@@ -6,15 +6,15 @@
 
 char DELIMITER = '|';
 string RETURNFILENAME = "returnfile";
+string FILESUFFIX = ".bin";
 
 mmytable::mmytable(){
-    assert(true); /** @todo **/
+
 }
 mmytable::mmytable(const string& filelocation)
     : __name(filelocation), __dir(""){
 
-    if(!read_file())
-        cout << "Can't read\n";
+    read_file();
 }
 
 mmytable::mmytable(const string& table_name, const string &dir)
@@ -26,12 +26,40 @@ mmytable::mmytable(const string& table_name, const string &dir)
 
     read_file();
 }
-
+//Create a file and establish our record class
+bool mmytable::create(bool overwrite){
+    //Overwrites or avoids deleting old data
+    if(overwrite && !__init || !__init && !__fields.empty() &&
+            !mmyhelper::file_exists(__dir+__name)){
+        __init=true;
+        /** @todo Perhaps add an easy template for putting a map
+         * into a vector **/
+        vector<string> fieldnames;
+        for(auto it = __fields.begin(); it != __fields.end(); it++)
+            fieldnames.push_back((*it).val);
+        writer newfile;
+        bool flag= newfile.write(__dir+__name, fieldnames); //write file
+        read_file();
+        return flag;
+    }else if(!__init && !__fields.empty()){
+        cout << "[mmytable] Cannot create " << __dir+__name
+             << ": Already exists\n";
+        return false;
+    }
+    if(__fields.empty())
+        cout << "[mmytable] Cannot create: Missing fields\n";
+    if(__init)
+        cout << "[mmytable] Cannot create: Already initialized.\n";
+    return false;
+}
 //Reads the file into our table
 bool mmytable::read_file(){
+    if(!mmyhelper::file_exists(__dir+__name))
+        return false;
     if(!rec.set_file(__dir+__name))
         return false;
 
+    __init = true;
     __delimiter = rec.get_delimiter();
 
     field_add_all(rec.get_fieldnames());
@@ -43,7 +71,8 @@ bool mmytable::read_file(){
     }
     return true;
 }
-void mmytable::init(const string &table_name){
+void mmytable::init(const string &table_name, const string& dir){
+    __dir = dir;
     __name = table_name;
 }
 
@@ -54,6 +83,8 @@ void mmytable::field_add_all(const vector<string>& fieldnames){
 }
 
 void mmytable::field_add(const string &field_name){
+    if(__init) //Block more fields from being added
+        return;
     size_t fsize = __itables.size();
     __itables.insert(field_name);
     __fields[fsize] = field_name; //Associate the column to field. For file read/write
@@ -61,6 +92,8 @@ void mmytable::field_add(const string &field_name){
 }
 
 void mmytable::insert(vector<string>& fieldnames){
+    if(!__init) //block inserts if it's not initialized
+        return;
     unsigned long line = rec.insert(fieldnames);
     parse(rec.get_line(line), __delimiter);
 }
@@ -296,6 +329,13 @@ void mmyhelper::print_table(const vector<vector<string> >& table,
             cout << endl;
     }
     cout << endl;
+}
+
+bool mmyhelper::file_exists(const string& filename){
+    ifstream checker(filename+FILESUFFIX);
+    bool exists = checker.good();
+    checker.close();
+    return exists;
 }
 
 //Get a vector of all id#s that pass the comparison

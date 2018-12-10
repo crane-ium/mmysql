@@ -18,4 +18,12 @@ static const std::set<std::string> POSTOPERATORS{"(", " "};
 static const std::set<std::string> BLOCKSKIP{"\""};
 
 
+extern char DELIMITER;
+extern std::string RETURNFILENAME;
+extern std::string FILESUFFIX;
+typedef unsigned long mmyint;
+
+enum class bugflag {none, light, medium, heavy};
+static bugflag debug = bugflag::none;
+
 #endif // MMY_CONSTANTS_H
