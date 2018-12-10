@@ -1,10 +1,9 @@
-|age|lname|fname|
-18|120|Crane|Stephen|
-40|15|Blow|Joe|
-56|100|Barkeshli|Sassan|
-81|20|Stack|Bryan|
-100|20000|Grey|Chris|
-122|20|Stack|Bryan|
-142|20000|Grey|Chris|
-164|20|Stack|Bryan|
-184|20000|Grey|Chris|
+|age|fname|lname|major|major|age|
+34|120|Stephen|Crane|Statistics|Statistics|120|
+82|15|Joe|Blow|Math|Math|15|
+111|20|Bryan|Stack|CS|CS|20|
+140|20000|Chris|Grey|Computer Science|Computer Science|20000|
+202|20|Bryan|Stack|CS|CS|20|
+231|20000|Chris|Grey|Computer Science|Computer Science|20000|
+293|20|Bryan|Stack|CS|CS|20|
+322|20000|Chris|Grey|Computer Science|Computer Science|20000|

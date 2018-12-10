@@ -202,7 +202,6 @@ struct record{
             //the stream is now on the starting line
             //know how much to skip immediately
             _fieldbytes = initstream.tellg();
-//            cout << "set fbytes: " << _fieldbytes << endl;
             _init = true;
             initstream.close();
         }else{
@@ -212,7 +211,6 @@ struct record{
     bool open(){
         if(!_open){
             init(); //initialize record from data retrieved from file
-            cout << "fbytes: " << _fieldbytes << endl;
             _open= true;
             _ifstream.open(_file+".bin", ios::binary);
             if(_ifstream.is_open()){
@@ -280,7 +278,7 @@ public:
     void set_delimiter(const char new_delimiter){DELIMITER=new_delimiter;}
 
 //    void create(const string& table_name, const string &strs, ...); //REMOVED FEATURE
-//private: /** @todo reset private **/
+private:
     //__itables[fieldname][targetname]
     //OR set it to use a hash to store the multiple tables
     simple_map<string, multimap<string, mmyint> > __itables; //Index Tables

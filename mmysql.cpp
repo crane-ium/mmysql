@@ -13,8 +13,7 @@ mmysql::mmysql(){
     cout << "PREPARING INTERPRETER...\n";
     cout << "~~~WELCOME TO MMYSQL(TM) DATABASE QUERY INTERPRETER~~~\n";
     define_parsetree();
-    while(__currentmode != mode::exit)
-        run();
+    start();
 }
 
 mmysql::~mmysql(){
@@ -22,20 +21,24 @@ mmysql::~mmysql(){
         delete (*it).val;
     }
 }
+
+void mmysql::start(){
+    __currentmode == mode::DEFAULT;
+    while(__currentmode != mode::exit)
+        interpret();
+}
 void mmysql::display_history() const{
     cout << "\n------ PAST HISTORY -------\n";
     size_t count = 0;
     for(auto it = __history.begin(); it != __history.end(); it++){
+        count++;
         cout << "[" << setfill('0') << setw(3) << count << "]  "
              << (*it) << endl;
     }
 }
-//Runs the processes, starting by getting the next line;
-void mmysql::run(){
-    debug = bugflag::heavy;
-    //reset anything
-//    cin.clear();
-//    cin.ignore();
+//Runs the line in our mmysql terminal, starting by getting the next line;
+void mmysql::interpret(){
+//    debug = bugflag::heavy;
     __currentmode = mode::DEFAULT;
     __currentstate = state::DEFAULT;
     //lambda reset function for local variables
@@ -209,7 +212,8 @@ void mmysql::run(){
             temp->select(selector, get_string());
         else
             temp->select(selector, get_string(), shuntingqueue[token::fieldname]);
-        cout << "fields: " << shuntingqueue[token::fieldname] << endl;
+        if(debug>=bugflag::medium)
+            cout << "fields: " << shuntingqueue[token::fieldname] << endl;
         /** @todo Get that file written up and read from it **/
         break;
     }

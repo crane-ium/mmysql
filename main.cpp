@@ -34,46 +34,48 @@ int main(int argc, char *argv[])
 //    rec.insert(data2);
 
     mmytable table("test");
-    cout << table.__itables << endl;
+//    cout << table.__itables << endl;
 
-    vector<string> allowedfields{"age", "lname", "fname", "Does not exist"};
+//    vector<string> allowedfields{"age", "lname", "fname", "Does not exist"};
 
     string s = "age>15 or fname = Joe or (major = \"Statistics\" or major=CS)";
-    s = "age > 10 or age < 10";
+    vector<string> allowedfields{"age", "fname", "lname", "major", "nothing", "major", "age"};
+    s = "age<100 or age>100"; /** @todo FIX FIX!!!!!! FIX THE EXPRESSSION TREE **/
     fstream resultsfile("resultsfile.bin", ios::binary | ios::out | ios::ate);
     table.select(resultsfile, s, allowedfields);
     resultsfile.close();
 
+     mmysql sql;
+
 //    parse_tree<int> parse_tree_test;
 //    cin >> parse_tree_test;
 
-    simple_map<string, int> foo;
-    foo["seen"];
-    foo["see"];
-    foo["seems"];
-    foo["sea"];
-    cout << foo << endl;
-    auto it = foo.lower_bound("s");
-    cout << "lower: ";
-    cout << (it!=foo.end() ? (*it).key : "out of bounds") << endl;
+//    simple_map<string, int> foo;
+//    foo["seen"];
+//    foo["see"];
+//    foo["seems"];
+//    foo["sea"];
+//    cout << foo << endl;
+//    auto it = foo.lower_bound("s");
+//    cout << "lower: ";
+//    cout << (it!=foo.end() ? (*it).key : "out of bounds") << endl;
 
-    string temp;
-    string start = "select name, age from students where name=Stephen \n"
-            "insert into employees values Hahaha, Hehehe, Hohoho\n";
-    stringstream tempss;
-//    istream tempis;
-    tempss << start;
-//    tempis << start;
-    char* tempptr;
-    while(tempss >> temp){
-        cout << temp;
-        while(tempss.peek()==' ')
-            tempss.seekg(tempss.tellg()+1);
-        if(tempss.peek()=='\n')
-            cout <<"Hit endline\n";
-    }
+//    string temp;
+//    string start = "select name, age from students where name=Stephen \n"
+//            "insert into employees values Hahaha, Hehehe, Hohoho\n";
+//    stringstream tempss;
+////    istream tempis;
+//    tempss << start;
+////    tempis << start;
+//    char* tempptr;
+//    while(tempss >> temp){
+//        cout << temp;
+//        while(tempss.peek()==' ')
+//            tempss.seekg(tempss.tellg()+1);
+//        if(tempss.peek()=='\n')
+//            cout <<"Hit endline\n";
+//    }
 
-//    mmysql sql;
 
     //I THINK I AM GONNA GET RID OF THIS WHOLE CODE
 //    mmystate<> sm;

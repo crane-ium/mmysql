@@ -146,10 +146,10 @@ vector<string> mmytable::vector_parse(const string& fileline,
         for(size_t i = 0; i < ordering.size(); i++){
             results[i] = fieldvalues[ordering[i]];
         }
-//        if(debug >= bugflag::medium)
-        cout << "[mmytable] specified results: " << results << endl;
-        cout << "fv: " << fieldvalues << endl;
-        cout << "results: " << results << endl;
+        if(debug >= bugflag::medium)
+            cout << "[mmytable] specified results: " << results << endl
+                 << "fv: " << fieldvalues << endl
+                 << "results: " << results << endl;
     }
     return results;
 }
@@ -166,7 +166,7 @@ void mmytable::select(fstream& filestream,
 
 //    constraint_processor.print();
     set<mmyint> idnums = constraint_processor.get_ids(__itables);
-    constraint_processor.print();
+//    constraint_processor.print();
 
     //Quick map representing string:column# for fields
     simple_map<string, mmyint> temp_field_ids;
@@ -178,7 +178,6 @@ void mmytable::select(fstream& filestream,
         if(temp_field_ids.exists((*it)))
             fieldorder.push_back(temp_field_ids[(*it)]);
     }
-
 
     //if the vector fields is empty, then return all fields
     if(fields.empty()){
@@ -217,9 +216,10 @@ void mmytable::select(fstream& filestream,
         }
         filestream << DELIMITER; //start the file with the delimiter
         mmyhelper::stream_vecstring(filestream, fields); //write our fields to file
-        cout << "Fields: " << field_set << endl;
-        cout << "temp fields: " << temp_field_ids << endl;
-        cout << "fieldorder: " << fieldorder << endl;
+        if(debug>=bugflag::light)
+        cout << "Fields: " << field_set << endl
+             << "temp fields: " << temp_field_ids << endl
+             << "fieldorder: " << fieldorder << endl;
         for(auto it=idnums.begin(); it != idnums.end(); it++){
             vector<string> v = vector_parse(rec.get_line((*it)), fieldorder);
             assert(fieldorder.size() == v.size());

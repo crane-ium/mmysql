@@ -1,6 +1,6 @@
 #include "mmyshunting.h"
 
-debugger DBG = debugger::heavy;
+debugger DBG = debugger::none;
 
 mmynode* parse_to_tree(const string& s){
     mmynode* root = nullptr;
@@ -25,6 +25,7 @@ mmynode* parse_to_tree(const string& s){
             spare_parentheses++;
             p_left = i+1;
             continue; //skip the rest, we are only trying to find this block string
+
         }else if(spare_parentheses > 0){
             if(s[i] == '(')
                 spare_parentheses++;
@@ -32,19 +33,18 @@ mmynode* parse_to_tree(const string& s){
                 spare_parentheses--;
             b_left = i+1;
             mystate = state::getbbool; //after parentheses, expect bool
-            if(spare_parentheses==0)
-                if(!root){//if nullptr
-                    if(DBG>=debugger::medium)
-                        cout << "[MMYSHUNTING] P BLOCK: "
-                             << s.substr(p_left, i-p_left) << endl;
-                    child = parse_to_tree(s.substr(p_left, i-p_left));
-                }else{
-                    root->right = parse_to_tree(s.substr(p_left, i-p_left));
-                    if(DBG>=debugger::medium)
-                        cout << "[MMYSHUNTING] P BLOCK right root: "
-                             << root->right->val << endl;
+            if(spare_parentheses==0){
+                //This indicates we found the end parentheses
+                //Create a new child
+                if(child){
+                    assert(root);
+                    root->insert_boolean(child);
                 }
-
+                child = parse_to_tree(s.substr(p_left, i-p_left));
+                if(DBG>=debugger::medium)
+                    cout << "[MMYSHUNTING] P BLOCK: "
+                         << s.substr(p_left, i-p_left) << endl;
+            }
             continue;
         }
         if(mystate == state::getnextblock){
@@ -52,15 +52,18 @@ mmynode* parse_to_tree(const string& s){
             //Process the comparison operators
             string temp="";
             size_t index = 0;
+            //Check if the current index is a comparitor
             if((temp=parsetree::in_set(s, COMPARITORS, i))!=""){
-                index = i;
-                i += temp.size();
+                //temp is equal to the comparitor, if found
+                index = i;      //save the index
+                i += temp.size();//then increment the walker past the comparitor
+                //get the block left of the comparitor, and clean it
                 string left = mmytrim(s, b_left, index);
-                size_t i_left = i;
+                size_t i_left = i; //tracks the left index of the stringblock
                 bool hasword = false; //Move i up until the next word begins
                 bool inquote = false;
                 size_t quoteend = 0;
-                for(i=i; i < length;i++){
+                for(; i < length;i++){
                     if(!hasword && isspace(s[i])){
                         i_left++;
                         continue;
@@ -83,6 +86,8 @@ mmynode* parse_to_tree(const string& s){
                     right = mmytrim(s, i_left, quoteend);
                 else
                     right = mmytrim(s, i_left, i);
+                //Create the comparitor typed child
+                //  with the fieldname as left child and comparee as right child
                 mmynode* tempnode = new mmynode(temp);
                 tempnode->ttype = tokentype::comparitor;
                 tempnode->left = new mmynode(left);
@@ -90,36 +95,65 @@ mmynode* parse_to_tree(const string& s){
                 tempnode->left->ttype = tokentype::fieldname;
                 tempnode->right->ttype = tokentype::comparee;
                 mystate = state::getbbool;
-                if(root && !root->right)
-                    root->right = tempnode;
-                else
-                    child = tempnode;
+                //Hold a child until we the boolean operators can decide what to do with it
+                if(child){
+                    assert(root);
+                    root->insert_boolean(child);
+                }
+                child = tempnode;
+
                 if(DBG>=debugger::light)
                     cout << "[MMYSHUNTING] COMP BLOCK: " << left << ", "
                          << temp << ", " << right << endl;
-
-//                continue;
             }
         }
 
         //Process the boolean operators
         string temp="";
         size_t index;
+        //We must check if the current index leads with a preoperator
+        //  ie ' ' or ')' marking that the next block is happening
         if(parsetree::in_set(s[i],PREOPERATORS) &&
                 (temp=parsetree::in_set(s, BBOOLEANS, i+1))!="" &&
                 (i+temp.size() < length) &&
                 parsetree::in_set(s[i+temp.size()+1], POSTOPERATORS)){
             index = i+1;
             i += temp.size();
-            if(!root){//nullptr
-                root = new mmynode(temp, child);
-                root->ttype = tokentype::boolean;
-                child = nullptr;
+            //Here we must account for precedence
+            //of the boolean operands
+            mmynode* tempnode = new mmynode(temp);
+            tempnode->ttype = tokentype::boolean;
+            tempnode->btype = get_booleantype(temp);
+            assert(child!=nullptr); //there better be a child
+            //root indicates it holds a boolean operand
+            if(root){
+                //Check precedence
+                if(root->btype >= tempnode->btype){
+                    //if the precedence is greater than or equal to
+                    //  put the root as the child of tempnode and set
+                    //  tempnode as new root
+                    tempnode->left = root;
+                    root->insert_boolean(child);
+                    root = tempnode;
+                    //inserts the child and sets child nullptr
+                }else{
+                    tempnode->insert_boolean(child);
+                    root->insert_boolean(tempnode);
+                }
             }else{
-                mmynode* tempnode = new mmynode(temp, root);
+                //There does not exist a root yet, this is the first root
                 root = tempnode;
-                root->ttype = tokentype::boolean;
+                root->insert_boolean(child);
             }
+//            if(!root){//nullptr
+//                root = new mmynode(temp, child);
+//                root->ttype = tokentype::boolean;
+//                child = nullptr;
+//            }else{
+//                mmynode* tempnode = new mmynode(temp, root);
+//                root = tempnode;
+//                root->ttype = tokentype::boolean;
+//            }
             b_left = i+1;
             mystate = state::getnextblock;
             if(DBG>=debugger::light)
@@ -135,12 +169,34 @@ mmynode* parse_to_tree(const string& s){
             cout << "Failed myshunting return\n";
             assert(true);
         }
+    }else{
+        if(child)
+            root->insert_boolean(child);
     }
 
     return root;
 }
 
+//Insert recursively into the tree
+void mmynode::insert_boolean(mmynode* &ptr){
+    if(DBG>=debugger::medium) cout << "insert_boolean: " << this->val << endl;
+    assert(ttype == tokentype::boolean);
+    auto replace = [&](mmynode* &n, mmynode* &replacee){
+        n=replacee;
+        replacee=nullptr;
+    };
+    if(!left)
+        replace(left, ptr);
+    else if(!right)
+        replace(right, ptr);
+    else //If the parsing is workign as intended, it should always be to the right
+        right->insert_boolean(ptr);
+}
+
 void mmynode::generate_ids(simple_map<string, multimap<string, unsigned long> >& map){
+    //tokentype::
+    //age            >         10        and           ...
+    //fieldname  comparitor comparee   boolean
 
     if(ttype != tokentype::comparitor){
         if(left)
@@ -180,10 +236,10 @@ void mmynode::generate_ids(simple_map<string, multimap<string, unsigned long> >&
                 continue;
             }catch(...){
                 if(DBG>=debugger::light)
-                    cout << "[MMYNODE] Failed to compare as ul\n";
-//                if(compare_fields((*it).key, right->val, val))
-//                    idnums += (*it).vec;
-//                continue;
+                    cout << "[MMYNODE] Failed to compare as db\n";
+                if(compare_fields((*it).key, right->val, val))
+                    idnums += (*it).vec;
+                continue;
             }
         }
         if(compare_fields((*it).key, right->val, val)){
@@ -246,26 +302,26 @@ bool compare_fields(const string&left, const string&right, const string &compare
         //Determine based on size which is larger
         return (left_size != right_size ?
                     (left_size > right_size ? true:false):false);
-    }else if(">="){
+    }else if(comparee == ">="){
         for(size_t i = 0; i < smaller_size; i++){
             if(left[i] != right[i])
                 return left[i] > right[i];
         }
         return (left_size >= right_size ? true:false);
-    }else if("<"){
+    }else if(comparee == "<"){
         for(size_t i = 0; i < smaller_size; i++){
             if(left[i] != right[i])
                 return left[i] < right[i];
         }
         return (left_size != right_size ?
                     (left_size < right_size ? true:false):false);
-    }else if("<="){
+    }else if(comparee == "<="){
         for(size_t i = 0; i < smaller_size; i++){
             if(left[i] != right[i])
                 return left[i] < right[i];
         }
         return (left_size <= right_size ? true:false);
-    }else if("!=")
+    }else if(comparee == "!=")
         return left != right;
 
     if(DBG>=debugger::none)

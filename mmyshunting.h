@@ -12,17 +12,10 @@
 #include "../bplustree_mmap/map.h"
 #include "parse_tree_functions.h"
 
-//sorted by precedence, from lowest to highest
-enum class debugger{none, light, medium, heavy};
-enum class tokentype {none, fieldname, comparee, comparitor, boolean, ids};
-static const set<string> BBOOLEANS{"and", "or", "xor"}; //binary
-static const set<string> UBOOLEANS{"not"}; //unary
-static const set<string, greater<string> > COMPARITORS{"==", "=", "!=", "<=", ">=", "<", ">"};
-static const set<string> PREOPERATORS{")", " "};
-static const set<string> POSTOPERATORS{"(", " "};
-static const set<string> BLOCKSKIP{"\""};
+//Include constants
+#include "mmy_constants.h"
 
-extern debugger DBG;
+extern debugger DBG; //debug flag
 
 //Holds shunting_yard data
 struct mmynode{
@@ -42,6 +35,9 @@ struct mmynode{
         if(left)
             left->print(level+10);
     }
+    //Insert a child until it finds a null ptr left/right or
+    //  insert into the rightchild
+    void insert_boolean(mmynode *&ptr);
     //Generate ids for each node that has a comparitor
     void generate_ids(simple_map<string, multimap<string, unsigned long> >& map);
     //Generate ids by applying the boolean operations on the generated ids
@@ -50,6 +46,8 @@ struct mmynode{
     mmynode* left, *right; //children
     string val; //current value with an associated tokentype
     tokentype ttype;
+    //If it's a boolean, it will use this to check for precedence
+    booleantype btype=booleantype::NONE;
     set<unsigned long> idnums; //set of idnums that will be processed
 };
 //-----------------------------------------------------------------
@@ -63,18 +61,19 @@ string mmytrim(const string& s, size_t left, size_t right);
 //Compare two variables based on a given comparitor
 template<class numbertype, class compareetype>
 bool compare_fields(const numbertype& left, const compareetype& right, const string& comparee){
-    if(DBG>=debugger::light) cout << "Using templated compare fields\n";
+    if(DBG>=debugger::light) cout << "Using templated compare fields: "
+                                  << left << comparee << right << endl;
     if(comparee == "=" or comparee == "==")
         return left == static_cast<numbertype>(right);
     else if(comparee == ">")
         return left > static_cast<numbertype>(right);
-    else if(">=")
+    else if(comparee == ">=")
         return left >= static_cast<numbertype>(right);
-    else if("<")
+    else if(comparee == "<")
         return left < static_cast<numbertype>(right);
-    else if("<=")
+    else if(comparee == "<=")
         return left <= static_cast<numbertype>(right);
-    else if("!=")
+    else if(comparee == "!=")
         return left != static_cast<numbertype>(right);
 
     if(DBG>=debugger::none)
