@@ -3,6 +3,7 @@
 debugger DBG = debugger::none;
 
 mmynode* parse_to_tree(const string& s){
+    DBG = debugger::heavy;
     mmynode* root = nullptr;
     //Empty string means no constraints -> return all id#s
     if(s==""){
@@ -94,6 +95,8 @@ mmynode* parse_to_tree(const string& s){
                     right = mmytrim(s, i_left, i);
                 //Create the comparitor typed child
                 //  with the fieldname as left child and comparee as right child
+                /** @todo ew **/
+                temp = mmytrim(temp,0, temp.size());
                 mmynode* tempnode = new mmynode(temp);
                 tempnode->ttype = tokentype::comparitor;
                 tempnode->left = new mmynode(left);

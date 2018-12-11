@@ -7,6 +7,7 @@
 #include "mmysql.h"
 //#include "../state_machine/ftokenizer.h"
 #include "../state_machine/ftokenizer.h"
+#include "mmylogicparser.h"
 
 int DEBUG = 0;
 
@@ -51,6 +52,8 @@ int main(int argc, char *argv[])
     cout << "remaining string: " << ss.str().substr(ss.tellg()) << endl;
 
      mmysql sql;
+
+
 
 //    s = "one, 12345, three";
 //    stringstream ss(s);

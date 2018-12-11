@@ -196,14 +196,17 @@ vector<string> mmytable::vector_parse(const string& fileline,
 void mmytable::select(fstream& filestream,
                       const string& constraints,
                       vector<string> fields){
+    debug=bugflag::heavy;
     //Constraint format:
     //"where "fieldname >= comparee and fieldname2 = comparee2...""
     //Generate our constraint processing tree
     mmyshunting constraint_processor(constraints);
 
-//    constraint_processor.print();
+    if(debug>=bugflag::heavy)
+        constraint_processor.print();
     set<mmyint> idnums = constraint_processor.get_ids(__itables);
-//    constraint_processor.print();
+    if(debug>=bugflag::heavy)
+        constraint_processor.print();
 
     //Quick map representing string:column# for fields
     simple_map<string, mmyint> temp_field_ids;
