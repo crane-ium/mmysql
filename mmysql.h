@@ -8,6 +8,7 @@
 #include <iostream>
 #include <queue>
 #include <iomanip>
+#include <iterator>
 #include "mmytable.h" //read/writes from/to database. SQL gives commands
 #include "mmyenums.h"
 

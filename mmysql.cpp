@@ -84,43 +84,69 @@ void mmysql::interpret(){
     }
 
     //PARSETREE MIRACLES HAPPEN HERE
-    string nextblock;
+    string nextblock="";
     multimap<token, string> shuntingqueue; //infix style shunting : contradictory!
     bool repeatingflag=true;
     rulepair rules;
     size_t length=0;
+//    noskipws(parsestream); //Full parsing of string
+    parsestream.ignore(256, ' ');
+    //Get next block. Only obstacle are quotes
     auto get_next_block = [&](){
-        //check if valid based on quotation marks
-        while(isspace(parsestream.peek()))
+        bool inquotes = parsestream.peek()=='\"';
+        bool backslashflag = false;
+        bool doneflag = false;
+        size_t leftit = parsestream.tellg();
+        auto ss_inc = [&](){
             parsestream.seekg(parsestream.tellg()+1);
-        if(parsestream.peek()=='\"'){
-            getline(parsestream,nextblock,'\"');
-            if(parsestream.peek()==','){
-                nextblock+=',';
-                parsestream.seekg(parsestream.tellg()+1);
+        };
+        auto pk = [&](){
+            return parsestream.peek();
+        };
+        if(inquotes) ss_inc();
+        while(parsestream && !doneflag){
+            switch(pk()){
+            case '\\':
+                backslashflag=true;
+//                it++;
+                continue;
+            case '\"':
+                if(inquotes && !backslashflag){
+                    ss_inc();
+                    doneflag = true;
+                    if((pk()) == ',')
+                        ss_inc();
+                }
+                break;
+            case '\n':
+            case ' ':
+                if(!inquotes){
+                    doneflag=true;
+                }
+            break;
+            case ',':
+                if(!inquotes){
+                    ss_inc();
+                    doneflag=true;
+                }
+                break;
+            default:
+                break;
             }
-        }else
-            parsestream >> nextblock;
-        cout << "Nextblock: " << nextblock << endl;
-        length = nextblock.size();
-//        auto nextblockvalid = [&](){
-//            return ((nextblock[0]=='\"' && (nextblock[length-1]=='\"' || nextblock[length-1]==','))  || nextblock[0] !='\"');
-//        };
-//        parsestream >> nextblock;
-//        length = nextblock.size(); //hold so we don't repeat calculate
-
-//        if(!nextblockvalid()){
-//            getline(parsestream, temp, '\"');
-//            if(parsestream.peek()==','){
-//                temp+=',';
-//                parsestream.seekg(parsestream.tellg()+1);
-//            }
-//            nextblock = nextblock + " " +
-//        }
+            if(doneflag)
+                break;
+            backslashflag=false;
+            ss_inc();
+        }
+        length = parsestream.tellg()-leftit;
+        nextblock = string(parsestream.str().substr(leftit,
+                                                    length));
+        while(isspace(pk()) && parsestream)
+            ss_inc();
     };
     while(parsestream.tellg() != -1){
         get_next_block();
-//        if(debug >= bugflag::medium)
+        if(debug >= bugflag::medium)
             cout << "nextblock: " <<static_cast<int>(__currentmode) << ":"
                  << nextblock << ":" << static_cast<int>(__currentstate) << endl;
         //We defined our __parsetree. Now let's use it
@@ -149,34 +175,38 @@ void mmysql::interpret(){
                 }
                 continue;
             case sf::allowcomma:
-                if(nextblock[length-1]==','){
+//                cout << "Comma: " << nextblock << ":" << (*(nextblock.end()-1))<< endl;
+                if((*(nextblock.end()-1))==','){
                     if(!(rule==rules.flags)){
                         invalid = true;
                         reset();
                         return;
                     }
+                    repeatingflag = true;
+                    nextblock.erase(nextblock.end()-1); //erase comma
+                    length--;
                     /** @badcode @todo this is awful and why i should've just
                      * done a safe statemachine... **/
 
                     //Find commas that are not in quotes
-                    bool quotes=false; //count how deep into parentheses
-                    size_t comma_index = 0;
-                    auto it = nextblock.begin();
-                    for(;it!=nextblock.end();it++){
-                        if((*it)=='\"' && (*(it-1)) != '\\'){
-                            quotes ^= true;
-                        }
-                        if(!quotes && (*it) == ','){
-                            break;
-                        }
-                        comma_index++;
-                    }
-                    parsestream.seekg(parsestream.tellg()-(length-comma_index-1));
-                    repeatingflag=true;
-                    nextblock = string(nextblock.begin(), it);
-                    cout << nextblock << endl;
-                    cout << "Next: " << (char)parsestream.peek() << ":" << parsestream.peek() << endl;
-                    length = nextblock.size();
+//                    bool quotes=false; //count how deep into parentheses
+//                    size_t comma_index = 0;
+//                    auto it = nextblock.begin();
+//                    for(;it!=nextblock.end();it++){
+//                        if((*it)=='\"' && (*(it-1)) != '\\'){
+//                            quotes ^= true;
+//                        }
+//                        if(!quotes && (*it) == ','){
+//                            break;
+//                        }
+//                        comma_index++;
+//                    }
+//                    parsestream.seekg(parsestream.tellg()-(length-comma_index-1));
+//                    repeatingflag=true;
+//                    nextblock = string(nextblock.begin(), it);
+//                    cout << nextblock << endl;
+//                    cout << "Next: " << (char)parsestream.peek() << ":" << parsestream.peek() << endl;
+//                    length = nextblock.size();
                 }
                 continue;
             case sf::allowquotes:
@@ -186,7 +216,8 @@ void mmysql::interpret(){
                         reset();
                         return;
                     }
-                    nextblock = nextblock.substr(1, length-2);
+                    nextblock.erase(nextblock.begin());//erase quotes
+                    nextblock.erase(nextblock.end()-1);
                     length-=2;
                 }
                 continue;
@@ -370,11 +401,13 @@ void mmysql::define_parsetree(){
 
     intmode = static_cast<int>(mode::create);
     __parsetree[intmode][state::start] =
-            rulepair(state::tablekey, token::none, sf::DEFAULT, set<string>{"table"});
+            rulepair(state::tablekey, token::none,
+                     sf::DEFAULT, set<string>{"table"});
     __parsetree[intmode][state::tablekey] =
             rulepair(state::gettable, token::tablename, sf::allowquotes);
     __parsetree[intmode][state::gettable] =
-            rulepair(state::fieldskey, token::none, sf::DEFAULT, set<string>{"field", "fields"});
+            rulepair(state::fieldskey, token::none,
+                     sf::DEFAULT, set<string>{"field", "fields"});
     __parsetree[intmode][state::fieldskey] =
             rulepair(state::getfields, token::fieldname, sf::allowcomma|
                      sf::allowquotes|sf::repeatable, set<string>(), true);

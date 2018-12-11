@@ -9,6 +9,7 @@
 #include <string>
 #include <set>
 #include <iomanip>
+#include <algorithm>
 #include "../bplustree_mmap/multimap.h"
 #include "../bplustree_mmap/map.h"
 #include "mmyshunting.h"

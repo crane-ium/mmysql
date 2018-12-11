@@ -12,6 +12,7 @@ SOURCES += \
     parse_tree_functions.cpp \
     mmystate.cpp \
     mmy_helper_functions.cpp \
+    mmyparse_tree.cpp \
 
 
 HEADERS += \
@@ -24,6 +25,7 @@ HEADERS += \
     mmyenums.h \
     mmy_helper_functions.h \
     mmy_constants.h \
+    mmyparse_tree.h \
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../state_machine/release/ -lstate_machine

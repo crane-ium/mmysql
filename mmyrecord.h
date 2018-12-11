@@ -108,9 +108,6 @@ struct record{
         return insert(emptyvec);
     }
     unsigned long insert(vector<string>& svec){
-//        init();
-        //Verify that the svec fits the dataframe
-//    if(svec.size() == _fields - 1){
         fstream fs(_file+".bin", ios::binary | ios::out | ios::app | ios::ate);
         unsigned long fsize = fs.tellg(); //get file size
         //I will manually add +".bin" because we are also only declaring

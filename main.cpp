@@ -1,10 +1,10 @@
 //MultiMap SQL (MMySQL)
 #include <iostream>
 #include <sstream>
+#include <iterator>
 //#include "../bplustree_mmap/multimap.h"
 #include "mmytable.h"
 #include "mmysql.h"
-#include "mmystate.h"
 //#include "../state_machine/ftokenizer.h"
 #include "../state_machine/ftokenizer.h"
 
@@ -37,6 +37,18 @@ int main(int argc, char *argv[])
     fstream resultsfile("resultsfile.bin", ios::binary | ios::out | ios::ate);
     table.select(resultsfile, s, allowedfields);
     resultsfile.close();
+
+    stringstream ss("123  456");
+    noskipws(ss);
+    ss.seekg(2);
+    auto it = istream_iterator<char>(ss);
+    cout << "Iterating\n";
+    for(;it!=istream_iterator<char>();it++){
+        if((*it)==' ')
+            break;
+        cout << (*it) << endl;
+    }
+    cout << "remaining string: " << ss.str().substr(ss.tellg()) << endl;
 
      mmysql sql;
 
