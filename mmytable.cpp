@@ -123,11 +123,7 @@ void mmytable::parse(const string &fileline, const char delimiter){
             subs = fileline.substr(i_start, i - i_start);
             //Put them into their fields
             if(count==0){
-                try{
-                    lineid = stoul(subs);
-                }catch(...){
-                    cout << "[mmytable] Catch stoul problem\n";
-                }
+                lineid = stoul(subs);
             }else{
                 __itables[__fields[count-1]][subs] += lineid;
             }
@@ -205,11 +201,9 @@ void mmytable::select(fstream& filestream,
     //Generate our constraint processing tree
     mmyshunting constraint_processor(constraints);
 
-    if(debug>=bugflag::heavy)
-        constraint_processor.print();
+//    constraint_processor.print();
     set<mmyint> idnums = constraint_processor.get_ids(__itables);
-    if(debug>=bugflag::heavy)
-        constraint_processor.print();
+//    constraint_processor.print();
 
     //Quick map representing string:column# for fields
     simple_map<string, mmyint> temp_field_ids;
@@ -333,6 +327,9 @@ void mmyhelper::print_table(const vector<vector<string> >& table,
         }
         if(i==table.begin())
             cout << endl;
+    }
+    if(table.size()==1){
+        cout << "----    EMPTY TABLE    ----\n";
     }
     cout << endl;
 }

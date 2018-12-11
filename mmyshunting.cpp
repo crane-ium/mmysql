@@ -94,8 +94,6 @@ mmynode* parse_to_tree(const string& s){
                     right = mmytrim(s, i_left, i);
                 //Create the comparitor typed child
                 //  with the fieldname as left child and comparee as right child
-                /** @todo ew **/
-                temp = mmytrim(temp,0, temp.size());
                 mmynode* tempnode = new mmynode(temp);
                 tempnode->ttype = tokentype::comparitor;
                 tempnode->left = new mmynode(left);
@@ -232,7 +230,6 @@ void mmynode::generate_ids(simple_map<string, multimap<string, unsigned long> >&
         if(DBG>=debugger::heavy)
             cout << "Cannot string to double (stod): " << right->val << endl;
     }
-    ttype = tokentype::emptyset;
     for(auto it = map[left->val].begin(); it != map[left->val].end(); it++){
         if(cflag==comparee_type::db){
             try{

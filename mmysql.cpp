@@ -13,7 +13,6 @@ mmysql::mmysql(){
     cout << "PREPARING INTERPRETER...\n";
     cout << "~~~WELCOME TO MMYSQL(TM) DATABASE QUERY INTERPRETER~~~\n";
     define_parsetree();
-    start();
 }
 
 mmysql::~mmysql(){
@@ -307,7 +306,9 @@ void mmysql::interpret(){
         vector<vector<string> > select_table;
         select_table.push_back(reader.get_fieldnames());
         while(reader.more()){
-            select_table.push_back(reader.next_vector());
+            auto temp = reader.next_vector();
+            if(!temp.empty())
+            select_table.push_back(temp);
         }
         vector<size_t> column_max = reader.longest();
         mmyhelper::print_table(select_table,
