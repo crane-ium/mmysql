@@ -361,7 +361,18 @@ void mmysql::interpret(istream& ss){
             cout << "[ERROR HAHAHA] CANNOT BATCH: FILE DOES NOT EXIST\n";
             return;
         }
-        run_batch(temptablename);
+        size_t iterations = 1;
+//        cout << shuntingqueue[token::number] << endl;
+        if(shuntingqueue.exists(token::number)){
+            try{
+                cout << "Gonna try?\n";
+                iterations = static_cast<unsigned long>(stod(shuntingqueue[token::number][0]));
+                cout << "iterations: " << iterations << endl;
+            }catch(...){
+                cout << "Batch: Failed to handle given number\n";
+            }
+        }
+        run_batch(temptablename, iterations);
     }
         break;
     case mode::start:
@@ -374,19 +385,24 @@ void mmysql::display_terminal(){
     cout << "[" << linecount << "]>";
     linecount++;
 }
-void mmysql::run_batch(const string& filename){
-    ifstream batchreader(filename+".txt");
-    if(!batchreader.is_open())
-        return;
-//    cin.clear();
-    string templine;
-    while(batchreader){
-        getline(batchreader,templine);
-        cout << "Batch line: " << templine << endl;
-        istringstream tempss(templine);
-//        cin.rdbuf(tempss.rdbuf());
-        interpret(tempss);
+void mmysql::run_batch(const string& filename, size_t iterations){
+
+    for(size_t i = 0; i < iterations; i++){
+        ifstream batchreader(filename+".txt");
+        if(!batchreader.is_open())
+            return;
+    //    cin.clear();
+        string templine;
+
+        while(batchreader){
+            getline(batchreader,templine);
+            istringstream tempss(templine);
+            cout << templine << endl;
+            //        cin.rdbuf(tempss.rdbuf());
+            interpret(tempss);
+        }
     }
+    cout << "MMYSQL Batch complete\n";
 }
 void mmysql::define_parsetree(){
     //Later, we do not want to access keys directly, we want to check if
@@ -449,6 +465,9 @@ void mmysql::define_parsetree(){
             rulepair(state::fromkey, token::none, sf::DEFAULT, set<string>{"from"});
     __parsetree[intmode][state::fromkey] =
             rulepair(state::gettable, token::tablename, sf::allowquotes,
+                     set<string>(), true);
+    __parsetree[intmode][state::gettable] =
+            rulepair(state::getquantity, token::number, sf::none,
                      set<string>(), true);
 }
 

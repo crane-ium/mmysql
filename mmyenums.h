@@ -4,7 +4,7 @@
 #include <iostream>
 
 //DECLARE OUR MODES/STATES FOR OUR STATEMACHINE
-enum class token{none, modename, fieldname, tablename, constraint, wildcard};
+enum class token{none, modename, fieldname, tablename, constraint, wildcard, number};
 enum class mode {start=0, select=1, create=2, make=6,
                  insert=3, exit=4, history=5, forcecreate=7, forcemake=8,
                  batch=9, DEFAULT=mode::start};
@@ -14,7 +14,7 @@ static mode modelist[10] = {mode::start, mode::select, mode::create, mode::make,
                             mode::forcecreate, mode::forcemake, mode::batch};
 enum class state{start, tablekey, fieldskey, intokey, fromkey,
                  valueskey, wherekey, getfields, getconstraint,
-                 gettable, getvalues, DEFAULT=state::start};
+                 gettable, getvalues, getquantity, DEFAULT=state::start};
 //I am going ot use stateflags like integer representations
 //  of bits, so I can do clean bitwise operations
 /** @def sf = stateflag **/
@@ -71,6 +71,9 @@ inline std::ostream& operator <<(std::ostream& outs, const token& rhs){
         break;
     case token::tablename:
         outs << "tablename";
+        break;
+    case token::number:
+        outs << "number";
         break;
     default:
         outs << "INVALID";

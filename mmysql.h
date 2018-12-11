@@ -80,7 +80,7 @@ public:
 //    vector<vector<string> >& select(vector<string>& fields);
     void interpret(istream &ss);
     void start();
-    void run_batch(const string& filename);
+    void run_batch(const string& filename, size_t iterations);
     void display_history() const; //displays in terminal previous inputs
 private:
     //Our statemachine adjacency "matrix"
