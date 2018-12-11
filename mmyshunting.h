@@ -27,9 +27,11 @@ struct mmynode{
         if(right)
             right->print(level+10);
         cout << setw(level) << "[";
-        if(idnums.empty())
+        if(ttype == tokentype::emptyset)
+            cout << "nullset" << "]\n";
+        else if(idnums.empty()){
             cout << val << "]\n";
-        else
+        }else
             cout << idnums << "]\n";
         if(left)
             left->print(level+10);

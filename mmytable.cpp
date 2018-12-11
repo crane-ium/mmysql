@@ -123,7 +123,11 @@ void mmytable::parse(const string &fileline, const char delimiter){
             subs = fileline.substr(i_start, i - i_start);
             //Put them into their fields
             if(count==0){
-                lineid = stoul(subs);
+                try{
+                    lineid = stoul(subs);
+                }catch(...){
+                    cout << "[mmytable] Catch stoul problem\n";
+                }
             }else{
                 __itables[__fields[count-1]][subs] += lineid;
             }
@@ -196,7 +200,6 @@ vector<string> mmytable::vector_parse(const string& fileline,
 void mmytable::select(fstream& filestream,
                       const string& constraints,
                       vector<string> fields){
-    debug=bugflag::heavy;
     //Constraint format:
     //"where "fieldname >= comparee and fieldname2 = comparee2...""
     //Generate our constraint processing tree

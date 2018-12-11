@@ -3,7 +3,6 @@
 debugger DBG = debugger::none;
 
 mmynode* parse_to_tree(const string& s){
-    DBG = debugger::heavy;
     mmynode* root = nullptr;
     //Empty string means no constraints -> return all id#s
     if(s==""){
@@ -233,6 +232,7 @@ void mmynode::generate_ids(simple_map<string, multimap<string, unsigned long> >&
         if(DBG>=debugger::heavy)
             cout << "Cannot string to double (stod): " << right->val << endl;
     }
+    ttype = tokentype::emptyset;
     for(auto it = map[left->val].begin(); it != map[left->val].end(); it++){
         if(cflag==comparee_type::db){
             try{

@@ -53,14 +53,14 @@ struct record{
         _fields=0;
         _fieldbytes = 0;
         _lastrecord="";
-        _lastrecordflag = false;
+        _lastrecordflag = true;
     }
     record(const string& filename, const char delimiter=DELIMITER)
         :_open(false), _init(false), _file(filename), _delimiter(delimiter){
         _fields=0;
         _fieldbytes = 0;
         _lastrecord="";
-        _lastrecordflag = false;
+        _lastrecordflag = true;
         init(); //initialize record from file
     }
     //read iterator
@@ -91,7 +91,6 @@ struct record{
         if(open()){
             _ifstream.seekg(bytes);
             getline(_ifstream, _lastrecord);
-//            cout << "LAST REC: " << bytes << ", " << _lastrecord << endl;
             return _lastrecord;
         }
     }
@@ -133,30 +132,30 @@ struct record{
 //    }
     }
     string& next(){ //Return the next record from file
-        if(open() && _lastrecordflag){
-            _lastrecord = "";
-            if(debug==bugflag::medium) cout << "Fields: " << _fields << endl;
+//        if(open() && _lastrecordflag){
+//            _lastrecord = "";
+//            if(debug==bugflag::medium) cout << "Fields: " << _fields << endl;
 
-            getline(_ifstream, _lastrecord);
-            if(!_ifstream){
-                _open = false;
-                _ifstream.close();
-                _lastrecord = "\0";
-                _lastrecordflag = true; //don't let more grabs
-                return _lastrecord;
-            }
-            _lastrecordflag = true;
-            return _lastrecord;
-        }else if(!_lastrecordflag){
-            _lastrecordflag = true;
-            return _lastrecord;
-        }
+//            getline(_ifstream, _lastrecord);
+//            if(!_ifstream){
+//                _open = false;
+//                _ifstream.close();
+//                _lastrecord = "\0";
+//                _lastrecordflag = true; //don't let more grabs
+//                return _lastrecord;
+//            }
+//            _lastrecordflag = false;
+//            return _lastrecord;
+//        }else if(!_lastrecordflag){
+//            _lastrecordflag = true;
+//            return _lastrecord;
+//        }
 //            char* line = _fstream.getline()
+        _lastrecordflag=true; //it's been grabbed
         return _lastrecord; //failed to ge tnext;
     }
     //Using record.next(), parse the given string and turn it into vector
     vector<string> next_vector(){
-        next();
         //Calling next() gave us an updated _lastrecord
         //lit: left_it
         auto lit = _lastrecord.begin();
@@ -177,15 +176,54 @@ struct record{
                 length=0;
             }
         }
+        _lastrecord = "";
+        next();
         return result;
     }
     //Returns the length of the longest string in the table
     vector<size_t> longest() const{return _longest;}
+    //reads next line from file
+    void get_line(){
+        cout << "in get-line\n";
+        if(open() && _lastrecordflag){ //it's open and nothing grabbed yet
+            cout << "in get-line2\n";
+            _lastrecord = "";
+            if(debug==bugflag::medium) cout << "Fields: " << _fields << endl;
+
+            getline(_ifstream, _lastrecord);
+            if(!_ifstream.is_open()){
+                _open = false;
+                _ifstream.close();
+                _lastrecord = "\0";
+                _lastrecordflag = true; //don't let more grabs
+                cout << "return bad\n";
+                return;
+            }
+            cout << "return good\n";
+            cout << "lastrec: " << _lastrecord << endl;
+            _lastrecordflag = false; //false = there's now somethign to grab
+        }
+    }
     bool more(){
-        next();
-        if(_lastrecord != "\0") //verify that you're not allowing an ungrabble data
-            _lastrecordflag = false;
-        return (!_lastrecordflag) | (bool)_ifstream;
+        get_line();
+        if(_lastrecord != "\0")
+            cout << "not null" << endl;
+        if(_lastrecord != "")
+            cout << "not empty" << endl;
+        cout << "mmyrecord debug data: " << "Fields: " << _fields << " fieldbytes: " << _fieldbytes << " fieldnames: " << _fieldnames << endl;
+//        if(_lastrecord == "\0" || _lastrecord == "") //verify that you're not allowing an ungrabble data
+//            return false;
+        cout << "lastrec: " << _lastrecord << endl;
+        if(_open && (_lastrecord == "\0" || _lastrecord == ""))
+            return false;
+        if(_lastrecordflag)
+            cout << "last record\n";
+        else
+            cout << "not last rec\n";
+//        _ifstream.tellg();
+        if((bool)_ifstream)
+            cout << "_ifstream still on\n" << _ifstream.is_open() << endl;
+        return (!_lastrecordflag) & (bool)_ifstream;
     }
     void init(){
         if(_init) //protect from re-init
@@ -224,7 +262,14 @@ struct record{
             _open= true;
             _ifstream.open(_file+".bin", ios::binary);
             if(_ifstream.is_open()){
-                _ifstream.ignore(_fieldbytes); //ignore initial bytes
+                _ifstream.seekg(_fieldbytes); //ignore initial bytes
+                cout << "in open\n";
+                cout << "tellg: " << _ifstream.tellg() << endl;
+                cout << "peek: " << _ifstream.peek() << endl;
+                _ifstream.seekg(_ifstream.tellg()+1);
+                cout << "peek: " << _ifstream.peek() << endl;
+                _ifstream.seekg(_ifstream.tellg()+1);
+                cout << "peek: " << _ifstream.peek() << endl;
                 return true;
             }
             _open = false;
@@ -246,7 +291,7 @@ struct record{
     unsigned long _fieldbytes; //bytes of starting field string
     char _delimiter; //delimiter that seperates fields
     string _lastrecord;
-    bool _lastrecordflag; //checks if it's been retrieved yet or not
+    bool _lastrecordflag=true; //checks if it's been retrieved yet or not
     vector<size_t> _longest; //keep track of the longest word per field there is
 };
 
