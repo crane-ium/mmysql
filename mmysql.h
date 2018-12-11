@@ -78,8 +78,9 @@ public:
 
     //return a 2d table with with requested fields
 //    vector<vector<string> >& select(vector<string>& fields);
-    void interpret();
+    void interpret(istream &ss);
     void start();
+    void run_batch(const string& filename);
     void display_history() const; //displays in terminal previous inputs
 private:
     //Our statemachine adjacency "matrix"

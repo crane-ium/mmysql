@@ -24,7 +24,7 @@ mmysql::~mmysql(){
 void mmysql::start(){
     __currentmode == mode::DEFAULT;
     while(__currentmode != mode::exit)
-        interpret();
+        interpret(cin);
 }
 void mmysql::display_history() const{
     cout << "\n------ PAST HISTORY -------\n";
@@ -36,14 +36,14 @@ void mmysql::display_history() const{
     }
 }
 //Runs the line in our mmysql terminal, starting by getting the next line;
-void mmysql::interpret(){
+void mmysql::interpret(istream& ss){
 //    debug = bugflag::heavy;
     __currentmode = mode::DEFAULT;
     __currentstate = state::DEFAULT;
     //lambda reset function for local variables
     auto reset = [&](){
         __currentmode = mode::DEFAULT;
-        cin.clear();
+        ss.clear();
         if(debug >= bugflag::light) cout << "[mmysql] reset(): There is a problem\n";
     };
 
@@ -52,7 +52,7 @@ void mmysql::interpret(){
     string commandmode;
     string nextline;
     //absorb the next line in the terminal interpreter
-    getline(cin, nextline); //Then get the rest of the line
+    getline(ss, nextline); //Then get the rest of the line
     __history.push_back(commandmode+nextline); //Keep track of all history
     stringstream parsestream(nextline); //Put it into a stream to be parsed
     parsestream >> commandmode; //get first block in stream
@@ -92,16 +92,22 @@ void mmysql::interpret(){
     parsestream.ignore(256, ' ');
     //Get next block. Only obstacle are quotes
     auto get_next_block = [&](){
-        bool inquotes = parsestream.peek()=='\"';
-        bool backslashflag = false;
-        bool doneflag = false;
-        size_t leftit = parsestream.tellg();
+        //local functions
         auto ss_inc = [&](){
             parsestream.seekg(parsestream.tellg()+1);
         };
         auto pk = [&](){
             return parsestream.peek();
         };
+
+        while(isspace(pk()) && parsestream)
+            ss_inc();
+        bool inquotes = pk()=='\"';
+        bool backslashflag = false;
+        bool doneflag = false;
+        size_t leftit = parsestream.tellg();
+
+//        cout << "Start: " << (char)pk() << endl;
         if(inquotes) ss_inc();
         while(parsestream && !doneflag){
             switch(pk()){
@@ -140,7 +146,7 @@ void mmysql::interpret(){
         length = parsestream.tellg()-leftit;
         nextblock = string(parsestream.str().substr(leftit,
                                                     length));
-        while(isspace(pk()) && parsestream)
+        while((pk()==' ' || pk()=='\n') && parsestream)
             ss_inc();
     };
     while(parsestream.tellg() != -1){
@@ -184,32 +190,10 @@ void mmysql::interpret(){
                     repeatingflag = true;
                     nextblock.erase(nextblock.end()-1); //erase comma
                     length--;
-                    /** @badcode @todo this is awful and why i should've just
-                     * done a safe statemachine... **/
-
-                    //Find commas that are not in quotes
-//                    bool quotes=false; //count how deep into parentheses
-//                    size_t comma_index = 0;
-//                    auto it = nextblock.begin();
-//                    for(;it!=nextblock.end();it++){
-//                        if((*it)=='\"' && (*(it-1)) != '\\'){
-//                            quotes ^= true;
-//                        }
-//                        if(!quotes && (*it) == ','){
-//                            break;
-//                        }
-//                        comma_index++;
-//                    }
-//                    parsestream.seekg(parsestream.tellg()-(length-comma_index-1));
-//                    repeatingflag=true;
-//                    nextblock = string(nextblock.begin(), it);
-//                    cout << nextblock << endl;
-//                    cout << "Next: " << (char)parsestream.peek() << ":" << parsestream.peek() << endl;
-//                    length = nextblock.size();
                 }
                 continue;
             case sf::allowquotes:
-                if(nextblock[0]=='\"' && nextblock[length-1]=='\"'){
+                if(nextblock[0]=='\"' && (*(nextblock.end()-1))=='\"'){
                     if(!(rule==rules.flags)){
                         invalid=true;
                         reset();
@@ -257,7 +241,13 @@ void mmysql::interpret(){
 
     //Quick lambda to test for file existance
     auto file_exists = [](const string& filename){
-        ifstream checker(filename+".bin");
+        ifstream checker(filename+".bin", ios::binary);
+        bool exists = checker.good();
+        checker.close();
+        return exists;
+    };
+    auto txt_file_exists = [](const string& filename){
+        ifstream checker(filename+".txt");
         bool exists = checker.good();
         checker.close();
         return exists;
@@ -364,6 +354,16 @@ void mmysql::interpret(){
         cout << "\nMMYSQL: Successfully inserted\n";
         break;
     }
+        //BATCHES A FILE INTO OUR SQL
+    case mode::batch:{
+        string temptablename = shuntingqueue[token::tablename][0];
+        if(!txt_file_exists(temptablename)){
+            cout << "[ERROR HAHAHA] CANNOT BATCH: FILE DOES NOT EXIST\n";
+            return;
+        }
+        run_batch(temptablename);
+    }
+        break;
     case mode::start:
     default:
         if(debug>=bugflag::light) cout << "[mmysql] Invalid __currentmode, cannot parse\n";
@@ -373,6 +373,20 @@ void mmysql::interpret(){
 void mmysql::display_terminal(){
     cout << "[" << linecount << "]>";
     linecount++;
+}
+void mmysql::run_batch(const string& filename){
+    ifstream batchreader(filename+".txt");
+    if(!batchreader.is_open())
+        return;
+//    cin.clear();
+    string templine;
+    while(batchreader){
+        getline(batchreader,templine);
+        cout << "Batch line: " << templine << endl;
+        istringstream tempss(templine);
+//        cin.rdbuf(tempss.rdbuf());
+        interpret(tempss);
+    }
 }
 void mmysql::define_parsetree(){
     //Later, we do not want to access keys directly, we want to check if
@@ -430,6 +444,12 @@ void mmysql::define_parsetree(){
     __parsetree[intmode][state::valueskey] =
             rulepair(state::getvalues, token::fieldname, sf::allowcomma|
                      sf::allowquotes|sf::repeatable, set<string>(), true);
+    intmode = static_cast<int>(mode::batch);
+    __parsetree[intmode][state::start] =
+            rulepair(state::fromkey, token::none, sf::DEFAULT, set<string>{"from"});
+    __parsetree[intmode][state::fromkey] =
+            rulepair(state::gettable, token::tablename, sf::allowquotes,
+                     set<string>(), true);
 }
 
 //vector<vector<string> >& mmysql::select(vector<string>& fields){

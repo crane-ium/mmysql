@@ -201,10 +201,11 @@ struct record{
             size_t i_start = 1;
             size_t i;
             for(i = 1; allfields[i] != '\0';i++){
-                if(allfields[i] == _delimiter){
                     //take this as a field
+                if(allfields[i] == _delimiter){
                     _fields++;
                     _fieldnames.push_back(allfields.substr(i_start, i-i_start));
+                    _longest.push_back(i - i_start);
                     i_start = i+1;
                 }
             }
@@ -213,7 +214,7 @@ struct record{
             _fieldbytes = initstream.tellg();
             _init = true;
             initstream.close();
-            _longest.resize(_fields);
+//            _longest.resize(_fields);
         }else{
             if(debug == bugflag::none) cout << "[FAIL] record.init cannot open " << _file+".bin" << endl;
         }

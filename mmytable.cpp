@@ -312,6 +312,7 @@ void mmyhelper::print_table(const vector<vector<string> >& table,
          << ", Records: " << table.size()-1;
     size_t record_count = 0, count=0;
     cout << right;
+    cout << column_width << endl;
     for(auto i = table.begin(); i != table.end(); i++){
         cout << endl;
         if(i==table.begin()){
@@ -329,7 +330,7 @@ void mmyhelper::print_table(const vector<vector<string> >& table,
             cout << endl;
     }
     if(table.size()==1){
-        cout << "----    EMPTY TABLE    ----\n";
+        cout << "  ----    EMPTY TABLE    ----\n";
     }
     cout << endl;
 }

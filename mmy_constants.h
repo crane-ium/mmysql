@@ -6,9 +6,7 @@
 
 //sorted by precedence, from lowest to highest
 enum class debugger{none, light, medium, heavy};
-enum class tokentype {none, fieldname, comparee,
-                      comparitor, boolean, ids,
-                      emptyset};
+enum class tokentype {none, fieldname, comparee, comparitor, boolean, ids};
 //booleantype identifiers are allcaps only because lowercase are reserved
 enum class booleantype {NONE, OR, AND, XOR, NOT, INVALID, }; //precedence flags
 enum class unarytype {NOT}; //not sure i'll use this, just in case <3

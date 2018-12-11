@@ -13,7 +13,6 @@ SOURCES += \
     mmystate.cpp \
     mmy_helper_functions.cpp \
     mmyparse_tree.cpp \
-    mmylogicparser.cpp \
 
 
 HEADERS += \
@@ -27,8 +26,6 @@ HEADERS += \
     mmy_helper_functions.h \
     mmy_constants.h \
     mmyparse_tree.h \
-    mmylogicparser.h \
-
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../state_machine/release/ -lstate_machine
@@ -50,10 +47,4 @@ DISTFILES += \
     resultsfile.bin \
     work_report.txt \
     returnfile.bin \
-    sample_inputs.txt \
-    employee.bin \
-    resultsfile.bin \
-    returnfile.bin \
-    something.bin \
-    student.bin \
-    test.bin
+    sample_inputs.txt
