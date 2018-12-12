@@ -20,38 +20,39 @@ multimap<string, long> get_word_indices(const string& file_name);
 
 int main(int argc, char *argv[])
 {
-    vector<string> fields{"lname", "fname", "age", "major"};
-    record rec;
-    vector<string> data0{"Crane", "Stephen", "120", "Statistics"};
-    vector<string> data1{"Blow", "Joe", "15", "Math"};
-    vector<string> data2{"Barkeshli", "Sassan", "100", "CS"};
-    vector<string> data3{"Stack", "Bryan", "20", "CS"};
-    vector<string> data4{"Grey", "Chris", "20000", "Computer Science"};
-    mmytable table("test");
+    mmysql sql;
+    sql.start();
 
-//    vector<string> allowedfields{"age", "lname", "fname", "Does not exist"};
+//    vector<string> fields{"lname", "fname", "age", "major"};
+//    record rec;
+//    vector<string> data0{"Crane", "Stephen", "120", "Statistics"};
+//    vector<string> data1{"Blow", "Joe", "15", "Math"};
+//    vector<string> data2{"Barkeshli", "Sassan", "100", "CS"};
+//    vector<string> data3{"Stack", "Bryan", "20", "CS"};
+//    vector<string> data4{"Grey", "Chris", "20000", "Computer Science"};
+//    mmytable table("test");
 
-    string s = "age>15 or fname = Joe or (major = \"Statistics\" or major=CS)";
-    vector<string> allowedfields{"age", "fname", "lname", "major", "nothing", "major", "age"};
-    s = "age<100 or age>100"; /** @todo FIX FIX!!!!!! FIX THE EXPRESSSION TREE **/
-    fstream resultsfile("resultsfile.bin", ios::binary | ios::out | ios::ate);
-    table.select(resultsfile, s, allowedfields);
-    resultsfile.close();
+////    vector<string> allowedfields{"age", "lname", "fname", "Does not exist"};
 
-    stringstream ss("123  456");
-    noskipws(ss);
-    ss.seekg(2);
-    auto it = istream_iterator<char>(ss);
-    cout << "Iterating\n";
-    for(;it!=istream_iterator<char>();it++){
-        if((*it)==' ')
-            break;
-        cout << (*it) << endl;
-    }
-    cout << "remaining string: " << ss.str().substr(ss.tellg()) << endl;
+//    string s = "age>15 or fname = Joe or (major = \"Statistics\" or major=CS)";
+//    vector<string> allowedfields{"age", "fname", "lname", "major", "nothing", "major", "age"};
+//    s = "age<100 or age>100"; /** @todo FIX FIX!!!!!! FIX THE EXPRESSSION TREE **/
+//    fstream resultsfile("resultsfile.bin", ios::binary | ios::out | ios::ate);
+//    table.select(resultsfile, s, allowedfields);
+//    resultsfile.close();
 
-     mmysql sql;
-     sql.start();
+//    stringstream ss("123  456");
+//    noskipws(ss);
+//    ss.seekg(2);
+//    auto it = istream_iterator<char>(ss);
+//    cout << "Iterating\n";
+//    for(;it!=istream_iterator<char>();it++){
+//        if((*it)==' ')
+//            break;
+//        cout << (*it) << endl;
+//    }
+//    cout << "remaining string: " << ss.str().substr(ss.tellg()) << endl;
+
 
 //    s = "one, 12345, three";
 //    stringstream ss(s);
