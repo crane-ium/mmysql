@@ -322,7 +322,7 @@ void mmyhelper::print_table(const vector<vector<string> >& table,
         }
         count=0;
         for(auto j = i->begin(); j != i->end(); j++){
-            cout << setw(column_width[count]+2) << (*j);
+            cout << setw(column_width[count]+4) << (*j);
             count++;
         }
         if(i==table.begin())

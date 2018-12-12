@@ -35,6 +35,31 @@ void mmysql::display_history() const{
         count++;
     }
 }
+void mmy::history_directory::display_history() const{
+    cout << "\n------ PAST HISTORY -------\n";
+    size_t count = 0;
+    for(auto it = data.begin(); it != data.end(); it++){
+        cout << "[" << (int(log10(data.size()))<3 ? setw(3) : setw(int(log10(data.size()))+1));
+        if((*it).type > mmy::historytype::unknown){
+            cout << setfill('0') << count;
+            count++;
+        }else
+            cout << setfill('X') << "";
+        cout << "]  " << (*it) << endl;
+    }
+    cout << endl;
+//    cout << "[END]" << endl;
+}
+void mmy::history_directory::set_lasttype(mmy::historytype t){
+    if(data.empty())
+        return;
+    (*(data.end()-1)).type = t;
+}
+bool mmy::history_directory::insert(const string &s, mmy::historytype t){
+    data.push_back(mmy::history_dataunit(s, t));
+    return true;
+}
+
 //Runs the line in our mmysql terminal, starting by getting the next line;
 void mmysql::interpret(istream& ss){
 //    debug = bugflag::heavy;
@@ -53,7 +78,8 @@ void mmysql::interpret(istream& ss){
     string nextline;
     //absorb the next line in the terminal interpreter
     getline(ss, nextline); //Then get the rest of the line
-    __history.push_back(commandmode+nextline); //Keep track of all history
+//    __history.push_back(commandmode+nextline); //Keep track of all history
+    __history_db.insert(commandmode+nextline);
     stringstream parsestream(nextline); //Put it into a stream to be parsed
     parsestream >> commandmode; //get first block in stream
 
@@ -74,7 +100,7 @@ void mmysql::interpret(istream& ss){
         /** @todo Add functionality for more history commands
          * eg. history -5 (shows the last 5 history inputs
          * eg. history -r 5 (repeats last 5 inputs) **/
-        display_history();
+        __history_db.display_history();
         return;
     case mode::exit:
         return;
@@ -304,6 +330,7 @@ void mmysql::interpret(istream& ss){
         mmyhelper::print_table(select_table,
                                temptablename,
                                column_max);
+        __history_db.set_lasttype(mmy::historytype::select);
         break;
     }
         //FORCEFUL CREATION
@@ -334,6 +361,7 @@ void mmysql::interpret(istream& ss){
             cout << "\nMMYSQL: Failed to create table " << temptablename << endl;
         if(debug >= bugflag::medium)
             cout << "[mmysql] Creating " << temptablename << ". \n";
+        __history_db.set_lasttype(mmy::historytype::make);
         return;
     }
         //INSERTION
@@ -352,6 +380,7 @@ void mmysql::interpret(istream& ss){
         }
         temp->insert(shuntingqueue[token::fieldname]);
         cout << "\nMMYSQL: Successfully inserted\n";
+        __history_db.set_lasttype(mmy::historytype::insert);
         break;
     }
         //BATCHES A FILE INTO OUR SQL
@@ -373,6 +402,7 @@ void mmysql::interpret(istream& ss){
             }
         }
         run_batch(temptablename, iterations);
+        __history_db.set_lasttype(mmy::historytype::batch);
     }
         break;
     case mode::start:
@@ -382,8 +412,9 @@ void mmysql::interpret(istream& ss){
     }
 }
 void mmysql::display_terminal(){
-    cout << "[" << linecount << "]>";
-    linecount++;
+//    cout << "[" << linecount << "]>";
+    cout << ">";
+//    linecount++;
 }
 void mmysql::run_batch(const string& filename, size_t iterations){
 

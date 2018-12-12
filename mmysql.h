@@ -9,12 +9,37 @@
 #include <queue>
 #include <iomanip>
 #include <iterator>
+#include <math.h>
 #include "mmytable.h" //read/writes from/to database. SQL gives commands
 #include "mmyenums.h"
 
 using namespace std;
 
 extern string DEFAULTRETURNFILE;
+
+namespace mmy{
+//Stores data relevant to the terminal history
+struct history_dataunit{
+    history_dataunit(){}
+    history_dataunit(const string& s, mmy::historytype t = mmy::historytype::unknown){inputline = s; type = t;}
+    friend std::ostream& operator << (std::ostream& outs, const history_dataunit& rhs){
+        outs << rhs.inputline;
+        return outs;
+    }
+    operator const std::string &() const{
+        return inputline;
+    }
+    mmy::historytype type;
+    string inputline;
+};
+//Stores data for history in a vector here
+struct history_directory{
+    bool insert(const string& s, historytype t = mmy::historytype::unknown); //inserts new history into most recent
+    void set_lasttype(mmy::historytype t);
+    void display_history() const;
+    vector<history_dataunit> data;
+};
+}
 
 /**
  * @brief Interact with database
@@ -92,13 +117,16 @@ private:
     string __constraint;
     //sections of the parsed line. Interpret these in the parse tree
     queue<string> __linewords;
-    vector<string> __history; //History of user's data
+    vector<mmy::history_dataunit> __history; //History of user's data
+    mmy::history_directory __history_db;
     mode __currentmode=mode::start;
     state __currentstate=state::start;
     size_t linecount = 0;
     void display_terminal();
     void define_parsetree(); //define our parsetree aka statemachine
 };
+
+
 
 //trying out some inline functions. I don't think i like it though because
 //  it clogs the build time

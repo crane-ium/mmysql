@@ -2,6 +2,7 @@
 #define MMYENUMS_H
 
 #include <iostream>
+#include <bitset>
 
 //DECLARE OUR MODES/STATES FOR OUR STATEMACHINE
 enum class token{none, modename, fieldname, tablename, constraint, wildcard, number};
@@ -15,6 +16,19 @@ static mode modelist[10] = {mode::start, mode::select, mode::create, mode::make,
 enum class state{start, tablekey, fieldskey, intokey, fromkey,
                  valueskey, wherekey, getfields, getconstraint,
                  gettable, getvalues, getquantity, DEFAULT=state::start};
+namespace mmy{
+//type of line interpreted previously
+enum class historytype{
+    unknown = 0,
+    invalid = 1 << 0,
+    select = 1 << 1,
+    insert = 1 << 2,
+    make = 1 << 3,
+    history = 1 << 4,
+    batch = 1 << 5,
+
+};
+}
 //I am going ot use stateflags like integer representations
 //  of bits, so I can do clean bitwise operations
 /** @def sf = stateflag **/
